@@ -44,6 +44,8 @@
 
 	<ItemGroup>
 	  <PackageReference Include="CsvHelper" Version="32.0.1" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
 	  <PackageReference Include="Xeption" Version="2.6.0" />
 	</ItemGroup>
 
