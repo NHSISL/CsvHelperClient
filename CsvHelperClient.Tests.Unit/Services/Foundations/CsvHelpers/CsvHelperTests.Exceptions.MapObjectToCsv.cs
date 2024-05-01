@@ -16,7 +16,6 @@ namespace CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
     public partial class CsvHelperTests
     {
         [Fact]
-
         public async Task ShouldThrowServiceExceptionOnMapObjectToCsvIfServiceErrorOccursAndLogItAsync()
         {
             // given

@@ -148,7 +148,6 @@ namespace CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
         }
 
-
         [Theory]
         [InlineData(false, false)]
         [InlineData(false, true)]

@@ -54,7 +54,6 @@ namespace CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 .ToList<dynamic>();
         }
 
-
         private static List<Car> CreateRandomCars()
         {
             return CreateCarFiller()

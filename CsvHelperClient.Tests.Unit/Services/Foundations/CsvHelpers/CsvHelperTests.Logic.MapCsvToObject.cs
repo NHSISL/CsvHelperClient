@@ -17,7 +17,6 @@ namespace CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 {
     public partial class CsvHelperTests
     {
-
         [Theory]
         [InlineData(true, false)]
         [InlineData(false, false)]
@@ -67,8 +66,6 @@ namespace CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
         }
-
-
 
         [Theory]
         [InlineData(true, false)]
