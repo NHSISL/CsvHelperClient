@@ -17,21 +17,27 @@
 		<AssemblyVersion>0.0.0.1</AssemblyVersion>
 		<FileVersion>0.0.0.1</FileVersion>
 		<NeutralLanguage>en-US</NeutralLanguage>
-		<PackageLicenseExpression></PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/NHSISL/CsvHelperClient</PackageProjectUrl>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageLicenseFile>License.txt</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageProjectUrl>https://github.com/NHSISL/CsvHelperClient</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/NHSISL/CsvHelperClient</RepositoryUrl>
 		<RepositoryType>GitHub</RepositoryType>
-		<PackageTags>.NET Client CSV Helper</PackageTags>
+		<PackageTags>.NET CSV Helper Client</PackageTags>
 		<PackageReleaseNotes>Beta release of the CSV Helper Client</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="License.txt">
+		<None Include="..\README.md">
+			<Pack>true</Pack>
+			<PackagePath></PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="..\License.txt">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
-		<None Include="Resources\CsvHelperClient.png">
+		<None Include="..\Resources\CsvHelperClient.png">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
