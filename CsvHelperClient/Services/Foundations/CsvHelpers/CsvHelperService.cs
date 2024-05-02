@@ -15,10 +15,8 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
     {
         private readonly ICsvHelperBroker csvHelperBroker;
 
-        public CsvHelperService(ICsvHelperBroker csvHelperBroker)
-        {
+        public CsvHelperService(ICsvHelperBroker csvHelperBroker) =>
             this.csvHelperBroker = csvHelperBroker;
-        }
 
         public ValueTask<List<T>> MapCsvToObjectAsync<T>(string data,
             bool hasHeaderRecord,
