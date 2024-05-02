@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CsvHelperClient.Services.Foundations.CsvHelpers
 {
-    public interface ICsvHelperService
+    internal interface ICsvHelperService
     {
         ValueTask<List<T>> MapCsvToObjectAsync<T>(
             string data,

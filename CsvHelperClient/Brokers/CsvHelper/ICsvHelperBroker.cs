@@ -7,7 +7,7 @@ using CsvHelper;
 
 namespace CsvHelperClient.Brokers.CsvHelper
 {
-    public interface ICsvHelperBroker
+    internal interface ICsvHelperBroker
     {
         CsvReader CreateCsvReader(StringReader reader, bool hasHeaderRecord);
         CsvWriter CreateCsvWriter(StringWriter writer, bool hasHeaderRecord);

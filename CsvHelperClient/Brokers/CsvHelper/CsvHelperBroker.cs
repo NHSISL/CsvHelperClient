@@ -10,7 +10,7 @@ using CsvHelper.Configuration;
 
 namespace CsvHelperClient.Brokers.CsvHelper
 {
-    public class CsvHelperBroker : ICsvHelperBroker
+    internal class CsvHelperBroker : ICsvHelperBroker
     {
         public CsvReader CreateCsvReader(StringReader reader, bool hasHeaderRecord)
         {

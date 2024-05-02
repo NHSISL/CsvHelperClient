@@ -8,7 +8,7 @@ using Xeptions;
 
 namespace CsvHelperClient.Services.Foundations.CsvHelpers
 {
-    public partial class CsvHelperService
+    internal partial class CsvHelperService
     {
         private static void ValidateMapCsvToObjectArguments(string data, bool hasHeaderRecord)
         {

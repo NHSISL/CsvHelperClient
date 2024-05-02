@@ -10,7 +10,7 @@ using Xeptions;
 
 namespace CsvHelperClient.Services.Foundations.CsvHelpers
 {
-    public partial class CsvHelperService
+    internal partial class CsvHelperService
     {
         private delegate ValueTask<string> ReturningStringFunction();
         private delegate ValueTask<List<T>> ReturningObjectFunction<T>();

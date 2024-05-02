@@ -21,7 +21,7 @@
 		<PackageProjectUrl>https://github.com/NHSISL/CsvHelperClient</PackageProjectUrl>
 		<PackageLicenseFile>License.txt</PackageLicenseFile>
 		<RepositoryUrl>https://github.com/NHSISL/CsvHelperClient</RepositoryUrl>
-		<RepositoryType>Github</RepositoryType>
+		<RepositoryType>GitHub</RepositoryType>
 		<PackageTags>.NET Client CSV Helper</PackageTags>
 		<PackageReleaseNotes>Beta release of the CSV Helper Client</PackageReleaseNotes>
 	</PropertyGroup>

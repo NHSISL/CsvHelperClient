@@ -11,7 +11,7 @@ using CsvHelperClient.Models.Foundations.CsvHelpers;
 
 namespace CsvHelperClient.Services.Foundations.CsvHelpers
 {
-    public partial class CsvHelperService : ICsvHelperService
+    internal partial class CsvHelperService : ICsvHelperService
     {
         private readonly ICsvHelperBroker csvHelperBroker;
 
