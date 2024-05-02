@@ -6,7 +6,7 @@
 		<Nullable>disable</Nullable>
 		<Title>CSV Helper Client</Title>
 		<Authors>Christo du Toit</Authors>
-		<Company>NEL ICB</Company>
+		<Company>NHSISL</Company>
 		<Description> .NET Standard Compliant Wrapper For The Popular CSVHelper Library </Description>
 		<Copyright>Copyright (c) NEL ICB</Copyright>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
