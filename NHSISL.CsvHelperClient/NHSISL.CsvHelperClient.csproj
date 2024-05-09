@@ -24,7 +24,7 @@
 		<RepositoryUrl>https://github.com/NHSISL/CsvHelperClient</RepositoryUrl>
 		<RepositoryType>GitHub</RepositoryType>
 		<PackageTags>.NET CSV Helper Client</PackageTags>
-		<PackageReleaseNotes>Beta release of the CSV Helper Client</PackageReleaseNotes>
+		<PackageReleaseNotes> Beta release of the CSV Helper Client </PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
