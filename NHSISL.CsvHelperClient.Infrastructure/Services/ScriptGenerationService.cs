@@ -91,7 +91,7 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
                         new TagJob(
                             runsOn: BuildMachines.UbuntuLatest,
                             dependsOn: "build",
-                            projectRelativePath: "CsvHelperClient/CsvHelperClient.csproj",
+                            projectRelativePath: "NHSISL.CsvHelperClient/NHSISL.CsvHelperClient.csproj",
                             githubToken: "${{ secrets.PAT_FOR_TAGGING }}",
                             branchName: branchName)
                     },
