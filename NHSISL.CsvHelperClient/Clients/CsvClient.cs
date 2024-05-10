@@ -11,11 +11,11 @@ using Xeptions;
 
 namespace NHSISL.CsvHelperClient.Clients
 {
-    public class CsvHelperClient : ICsvHelperClient
+    public class CsvClient : ICsvClient
     {
         private readonly ICsvHelperService csvHelperService;
 
-        public CsvHelperClient()
+        public CsvClient()
         {
             IHost host = RegisterServices();
             csvHelperService = host.Services.GetRequiredService<ICsvHelperService>();

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace NHSISL.CsvHelperClient.Clients
 {
-    public interface ICsvHelperClient
+    public interface ICsvClient
     {
         ValueTask<List<T>> MapCsvToObjectAsync<T>(
             string data,
