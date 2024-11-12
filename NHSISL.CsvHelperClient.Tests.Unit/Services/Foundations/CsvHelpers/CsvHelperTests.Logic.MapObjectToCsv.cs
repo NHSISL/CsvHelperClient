@@ -39,7 +39,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 
             //string expectedCsvFormattedCars = randomCsvFormattedcars.DeepClone();
 
-            //List<Car> inputCars = randomCars;
+            List<Car> myObject = randomCars;
             Dictionary<string, int> fieldMappings = null;
 
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -54,10 +54,10 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             //myObject.Rurabajuzo1 = "Vajugonipe";
             //myObject.Rurabajuzo2 = "1111111111";
 
-            var myObject = new List<object>
-            {
-                new { Rurabajuzo0 = "Vajugonipe", Rurabajuzo1 = "Vajugonipe", Rurabajuzo2 = "1111111111"}
-            };
+            //var myObject = new List<object>
+            //{
+            //    new { Rurabajuzo0 = "Vajugonipe", Rurabajuzo1 = "Vajugonipe", Rurabajuzo2 = "1111111111"}
+            //};
 
             using StringWriter stringWriter = new StringWriter();
             using CsvWriter csvWriter = new CsvWriter(stringWriter, config);
