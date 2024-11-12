@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using CsvHelperClient.Services.Foundations.CsvHelpers;
+﻿using CsvHelperClient.Services.Foundations.CsvHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NHSISL.CsvHelperClient.Brokers.CsvHelper;
 using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xeptions;
 
 namespace NHSISL.CsvHelperClient.Clients
@@ -36,14 +36,14 @@ namespace NHSISL.CsvHelperClient.Clients
             return host;
         }
 
-        public async ValueTask<List<T>> MapCsvToObjectAsync<T>(
+        public async ValueTask<List<dynamic>> MapCsvToObjectAsync<T>(
             string data,
             bool hasHeaderRecord,
             Dictionary<string, int> fieldMappings = null)
         {
             try
             {
-                return await csvHelperService.MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
+                return await csvHelperService.MapCsvToObjectAsync<dynamic>(data, hasHeaderRecord, fieldMappings);
             }
             catch (CsvHelperValidationException csvHelperValidationException)
             {
@@ -70,15 +70,15 @@ namespace NHSISL.CsvHelperClient.Clients
         }
 
         public async ValueTask<string> MapObjectToCsvAsync<T>(
-            List<T> @object,
+            List<dynamic> @object,
             bool addHeaderRecord,
-            Dictionary<string, int> fieldMappings = null,
+            Dictionary<string, int>? fieldMappings = null,
             bool? shouldAddTrailingComma = false)
         {
             try
             {
                 return await csvHelperService
-                    .MapObjectToCsvAsync(@object, addHeaderRecord, fieldMappings, shouldAddTrailingComma);
+                    .MapObjectToCsvAsync<T>(@object, addHeaderRecord, fieldMappings, shouldAddTrailingComma);
             }
             catch (CsvHelperValidationException meshOrchestrationValidationException)
             {
