@@ -36,14 +36,14 @@ namespace NHSISL.CsvHelperClient.Clients
             return host;
         }
 
-        public async ValueTask<List<dynamic>> MapCsvToObjectAsync<T>(
+        public async ValueTask<List<T>> MapCsvToObjectAsync<T>(
             string data,
             bool hasHeaderRecord,
             Dictionary<string, int> fieldMappings = null)
         {
             try
             {
-                return await csvHelperService.MapCsvToObjectAsync<dynamic>(data, hasHeaderRecord, fieldMappings);
+                return await csvHelperService.MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
             }
             catch (CsvHelperValidationException csvHelperValidationException)
             {
@@ -70,7 +70,7 @@ namespace NHSISL.CsvHelperClient.Clients
         }
 
         public async ValueTask<string> MapObjectToCsvAsync<T>(
-            List<dynamic> @object,
+            List<T> @object,
             bool addHeaderRecord,
             Dictionary<string, int>? fieldMappings = null,
             bool? shouldAddTrailingComma = false)

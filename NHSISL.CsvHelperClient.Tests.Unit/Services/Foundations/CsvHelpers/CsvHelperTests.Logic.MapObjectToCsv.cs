@@ -4,6 +4,8 @@
 
 using CsvHelper;
 using CsvHelper.Configuration;
+using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using NHSISL.CsvHelperClient.Tests.Unit.Models;
 using System;
@@ -21,8 +23,8 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
         [Theory]
         [InlineData(true, false)]
         [InlineData(false, false)]
-        //[InlineData(true, true)]
-        //[InlineData(false, true)]
+        [InlineData(true, true)]
+        [InlineData(false, true)]
         public async Task ShouldMapObjectToCsvWithoutFieldMappingsAsync(
             bool withHeader,
             bool withTrailingComma)
@@ -36,9 +38,9 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 hasHeaderRow: withHeader,
                 shouldAddTrailingComma: withTrailingComma);
 
-            //string expectedCsvFormattedCars = randomCsvFormattedcars.DeepClone();
+            string expectedCsvFormattedCars = randomCsvFormattedcars.DeepClone();
 
-            //List<Car> myObject = randomCars;
+            List<Car> inputCars = randomCars;
             Dictionary<string, int> fieldMappings = null;
 
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -48,13 +50,13 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 MissingFieldFound = null
             };
 
-            dynamic myObject = new ExpandoObject();
-            myObject.Rurabajuzo0 = "Vajugonipe";
-            myObject.Rurabajuzo1 = "Vajugonipe";
-            myObject.Rurabajuzo2 = "1111111111";
+            //dynamic myObject = new ExpandoObject();
+            //myObject.Rurabajuzo0 = "Vajugonipe";
+            //myObject.Rurabajuzo1 = "Vajugonipe";
+            //myObject.Rurabajuzo2 = "1111111111";
 
-            List<dynamic> myObjectList = new List<dynamic>();
-            myObjectList.Add(myObject);
+            //List<dynamic> myObjectList = new List<dynamic>();
+            //myObjectList.Add(myObject);
 
             //var myObject = new List<object>
             //{
@@ -73,15 +75,14 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                     .Returns(csvWriter);
 
             // when
-            string actualCsvFormattedCars = await this.csvHelperService.MapObjectToCsvAsync<dynamic>(
-                @object: myObjectList,
+            string actualCsvFormattedCars = await this.csvHelperService.MapObjectToCsvAsync(
+                @object: inputCars,
                 hasHeaderRecord: withHeader,
                 fieldMappings: fieldMappings,
                 shouldAddTrailingComma: withTrailingComma);
 
             // then
-            //actualCsvFormattedCars.Should().BeEquivalentTo(expectedCsvFormattedCars);
-            //actualCsvFormattedCars.Should().BeEquivalentTo(expectedCsvFormattedCars);
+            actualCsvFormattedCars.Should().BeEquivalentTo(expectedCsvFormattedCars);
 
             this.csvHelperBrokerMock.Verify(broker =>
                 broker.CreateStringWriter(),
@@ -162,65 +163,76 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
         //    this.csvHelperBrokerMock.VerifyNoOtherCalls();
         //}
 
-        //[Theory]
+        [Theory]
         //[InlineData(false, false)]
         //[InlineData(false, true)]
-        //public async Task ShouldMapDynamicToCsvWithNoFieldMappingsAsync(
-        //    bool withHeader,
-        //    bool withTrailingComma)
-        //{
-        //    // given
-        //    int count = GetRandomNumber();
-        //    List<Car> randomCars = CreateRandomCars();
-        //    List<dynamic> dynamicCars = CreateDynamicCars(randomCars);
+        [InlineData(true, false)]
+        //[InlineData(true, true)]
+        public async Task ShouldMapDynamicToCsvWithNoFieldMappingsAsync(
+            bool withHeader,
+            bool withTrailingComma)
+        {
+            // given
+            int count = GetRandomNumber();
+            List<Car> randomCars = CreateRandomCars();
+            List<dynamic> dynamicCars = CreateDynamicCars(randomCars);
 
-        //    string randomCsvFormattedcars = GetCsvRepresentationOfCar(
-        //        cars: randomCars,
-        //        hasHeaderRow: withHeader,
-        //        shouldAddTrailingComma: withTrailingComma);
+            dynamic myObject = new ExpandoObject();
+            myObject.Rurabajuzo0 = "Vajugonipe";
+            myObject.Rurabajuzo1 = "Vajugonipe";
+            myObject.Rurabajuzo2 = "1111111111";
 
-        //    string expectedCsvFormattedCars = randomCsvFormattedcars.DeepClone();
-        //    List<Car> inputCars = randomCars;
+            List<dynamic> myObjectList = new List<dynamic>();
+            myObjectList.Add(myObject);
 
-        //    Dictionary<string, int> fieldMappings = null;
+            string randomCsvFormattedcars = GetCsvRepresentationOfCar(
+                cars: randomCars,
+                hasHeaderRow: withHeader,
+                shouldAddTrailingComma: withTrailingComma);
 
-        //    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-        //    {
-        //        HasHeaderRecord = withHeader,
-        //        NewLine = Environment.NewLine,
-        //        MissingFieldFound = null
-        //    };
+            string expectedCsvFormattedCars = randomCsvFormattedcars.DeepClone();
+            List<Car> inputCars = randomCars;
 
-        //    using StringWriter stringWriter = new StringWriter();
-        //    using CsvWriter csvWriter = new CsvWriter(stringWriter, config);
 
-        //    this.csvHelperBrokerMock.Setup(broker =>
-        //        broker.CreateStringWriter())
-        //            .Returns(stringWriter);
+            Dictionary<string, int> fieldMappings = null;
 
-        //    this.csvHelperBrokerMock.Setup(broker =>
-        //        broker.CreateCsvWriter(It.IsAny<StringWriter>(), withHeader))
-        //            .Returns(csvWriter);
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = withHeader,
+                NewLine = Environment.NewLine,
+                MissingFieldFound = null
+            };
 
-        //    // when
-        //    string actualCsvFormattedCars = await this.csvHelperService.MapObjectToCsvAsync(
-        //        @object: dynamicCars,
-        //        hasHeaderRecord: withHeader,
-        //        fieldMappings,
-        //        shouldAddTrailingComma: withTrailingComma);
+            using StringWriter stringWriter = new StringWriter();
+            using CsvWriter csvWriter = new CsvWriter(stringWriter, config);
 
-        //    // then
-        //    actualCsvFormattedCars.Should().BeEquivalentTo(expectedCsvFormattedCars);
+            this.csvHelperBrokerMock.Setup(broker =>
+                broker.CreateStringWriter())
+                    .Returns(stringWriter);
 
-        //    this.csvHelperBrokerMock.Verify(broker =>
-        //        broker.CreateStringWriter(),
-        //            Times.Once);
+            this.csvHelperBrokerMock.Setup(broker =>
+                broker.CreateCsvWriter(It.IsAny<StringWriter>(), withHeader))
+                    .Returns(csvWriter);
 
-        //    this.csvHelperBrokerMock.Verify(broker =>
-        //        broker.CreateCsvWriter(It.IsAny<StringWriter>(), withHeader),
-        //            Times.Once());
+            // when
+            string actualCsvFormattedCars = await this.csvHelperService.MapObjectToCsvAsync(
+                @object: myObjectList,
+                hasHeaderRecord: withHeader,
+                fieldMappings: fieldMappings,
+                shouldAddTrailingComma: withTrailingComma);
 
-        //    this.csvHelperBrokerMock.VerifyNoOtherCalls();
-        //}
+            // then
+            //actualCsvFormattedCars.Should().BeEquivalentTo(expectedCsvFormattedCars);
+
+            this.csvHelperBrokerMock.Verify(broker =>
+                broker.CreateStringWriter(),
+                    Times.Once);
+
+            this.csvHelperBrokerMock.Verify(broker =>
+                broker.CreateCsvWriter(It.IsAny<StringWriter>(), withHeader),
+                    Times.Once());
+
+            this.csvHelperBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

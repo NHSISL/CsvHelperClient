@@ -6,6 +6,7 @@ using NHSISL.CsvHelperClient.Brokers.CsvHelper;
 using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers;
 using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
         public CsvHelperService(ICsvHelperBroker csvHelperBroker) =>
             this.csvHelperBroker = csvHelperBroker;
 
-        public ValueTask<List<dynamic>> MapCsvToObjectAsync<T>(string data,
+        public ValueTask<List<T>> MapCsvToObjectAsync<T>(string data,
             bool hasHeaderRecord,
             Dictionary<string, int>? fieldMappings = null) =>
             TryCatch(async () =>
@@ -34,14 +35,14 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
                         csvReader.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
                     }
 
-                    var records = csvReader.GetRecords<dynamic>().ToList();
+                    var records = csvReader.GetRecords<T>().ToList();
 
                     return await ValueTask.FromResult(records);
                 }
             });
 
         public ValueTask<string> MapObjectToCsvAsync<T>(
-            List<dynamic> @object,
+            List<T> @object,
             bool hasHeaderRecord,
             Dictionary<string, int>? fieldMappings = null,
             bool? shouldAddTrailingComma = false) =>
@@ -60,21 +61,30 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
 
                 if (hasHeaderRecord)
                 {
-                    csvWriter.WriteRecords(@object);
-                }
-                else
-                {
-                    foreach (var item in @object)
+                    var type = typeof(T);
+                    bool typeCheck = type.IsGenericType && type.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IDynamicMetaObjectProvider));
+                    if (typeCheck)
                     {
-                        csvWriter.WriteRecord(item);
-
-                        if (shouldAddTrailingComma.HasValue && shouldAddTrailingComma.Value == true)
-                        {
-                            csvWriter.WriteField("");
-                        }
-
+                        csvWriter.WriteDynamicHeader((System.Dynamic.IDynamicMetaObjectProvider)@object[0]);
                         csvWriter.NextRecord();
                     }
+                    else
+                    {
+                        csvWriter.WriteHeader<T>();
+                        csvWriter.NextRecord();
+                    }
+                }
+
+                foreach (var item in @object)
+                {
+                    csvWriter.WriteRecord(item);
+
+                    if (shouldAddTrailingComma.HasValue && shouldAddTrailingComma.Value == true)
+                    {
+                        csvWriter.WriteField("");
+                    }
+
+                    csvWriter.NextRecord();
                 }
 
                 stringWriter.Flush();
