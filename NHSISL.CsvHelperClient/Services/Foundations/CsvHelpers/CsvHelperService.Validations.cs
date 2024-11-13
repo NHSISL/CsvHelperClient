@@ -2,8 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
 using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
+using System;
 using Xeptions;
 
 namespace CsvHelperClient.Services.Foundations.CsvHelpers
@@ -17,11 +17,21 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
                     (Rule: IsInvalid(data), Parameter: "Data"));
         }
 
-        private static void ValidateMapObjectToCsvArguments<T>(T @object, bool hasHeaderRecord)
+        private static void ValidateMapObjectToCsvArguments<T>(
+            T @object, bool hasHeaderRecord)
         {
             Validate<InvalidCsvHelperArgumentsException>(
                     message: "Invalid CSV helper arguments. Please fix the errors and try again.",
                     (Rule: IsInvalid(@object), Parameter: "Object"));
+        }
+
+        private static void ValidateMapObjectToCsvArgumentCombination(bool isPlainObject, bool? shouldAddTrailingComma)
+        {
+            if (isPlainObject == true && shouldAddTrailingComma == true)
+            {
+                throw new InvalidCsvHelperArgumentCombinationException("Invalid CSV helper arguments. " +
+                    "Dynamic or anonymous types do not currently have support for trailing commas.");
+            }
         }
 
         private static dynamic IsInvalid(string text) => new
