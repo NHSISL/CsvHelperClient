@@ -2,10 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using Xeptions;
 
 namespace CsvHelperClient.Services.Foundations.CsvHelpers
@@ -45,6 +45,10 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
             catch (InvalidCsvHelperArgumentsException invalidCsvHelperArgumentsException)
             {
                 throw CreateValidationException(invalidCsvHelperArgumentsException);
+            }
+            catch (InvalidCsvHelperArgumentCombinationException invalidCsvHelperArgumentCombinationException)
+            {
+                throw CreateValidationException(invalidCsvHelperArgumentCombinationException);
             }
             catch (Exception exception)
             {
