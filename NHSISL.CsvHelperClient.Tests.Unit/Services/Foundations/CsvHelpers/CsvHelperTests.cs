@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -44,6 +45,22 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
         private static List<dynamic> CreateDynamicCars(List<Car> cars)
         {
             return cars
+                .Select(car =>
+                {
+                    dynamic item = new ExpandoObject();
+                    item.Make = car.Make;
+                    item.Model = car.Model;
+                    item.Year = car.Year;
+                    item.Color = car.Color;
+
+                    return item;
+                })
+                .ToList<dynamic>();
+        }
+
+        private static List<dynamic> CreateAnonymousObjectCars(List<Car> cars)
+        {
+            return cars
                 .Select(car => new
                 {
                     Make = car.Make,
@@ -53,6 +70,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 })
                 .ToList<dynamic>();
         }
+
 
         private static List<Car> CreateRandomCars()
         {

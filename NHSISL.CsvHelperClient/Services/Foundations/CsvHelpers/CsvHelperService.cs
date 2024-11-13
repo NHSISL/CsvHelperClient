@@ -58,22 +58,32 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
                     csvWriter.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
                 }
 
-                if (hasHeaderRecord)
+                var type = typeof(T);
+                bool isPlainObject = type == typeof(object);
+
+                if (isPlainObject)
                 {
-                    csvWriter.WriteHeader<T>();
-                    csvWriter.NextRecord();
+                    await csvWriter.WriteRecordsAsync<T>(@object);
                 }
-
-                foreach (var item in @object)
+                else
                 {
-                    csvWriter.WriteRecord(item);
-
-                    if (shouldAddTrailingComma.HasValue && shouldAddTrailingComma.Value == true)
+                    if (hasHeaderRecord)
                     {
-                        csvWriter.WriteField("");
+                        csvWriter.WriteHeader<T>();
+                        csvWriter.NextRecord();
                     }
 
-                    csvWriter.NextRecord();
+                    foreach (var item in @object)
+                    {
+                        csvWriter.WriteRecord(item);
+
+                        if (shouldAddTrailingComma.HasValue && shouldAddTrailingComma.Value == true)
+                        {
+                            csvWriter.WriteField("");
+                        }
+
+                        csvWriter.NextRecord();
+                    }
                 }
 
                 stringWriter.Flush();

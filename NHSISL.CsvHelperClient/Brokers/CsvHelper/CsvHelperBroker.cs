@@ -36,7 +36,7 @@ namespace NHSISL.CsvHelperClient.Brokers.CsvHelper
             {
                 HasHeaderRecord = hasHeaderRecord,
                 NewLine = Environment.NewLine,
-                MissingFieldFound = null
+                MissingFieldFound = null,
             };
 
             return new CsvWriter(writer, config);
