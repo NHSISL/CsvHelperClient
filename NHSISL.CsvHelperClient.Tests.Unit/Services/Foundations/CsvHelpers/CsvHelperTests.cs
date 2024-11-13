@@ -2,17 +2,19 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using CsvHelperClient.Services.Foundations.CsvHelpers;
 using Moq;
 using NHSISL.CsvHelperClient.Brokers.CsvHelper;
 using NHSISL.CsvHelperClient.Tests.Unit.Models;
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 {
@@ -44,6 +46,22 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
         private static List<dynamic> CreateDynamicCars(List<Car> cars)
         {
             return cars
+                .Select(car =>
+                {
+                    dynamic item = new ExpandoObject();
+                    item.Make = car.Make;
+                    item.Model = car.Model;
+                    item.Year = car.Year;
+                    item.Color = car.Color;
+
+                    return item;
+                })
+                .ToList<dynamic>();
+        }
+
+        private static List<dynamic> CreateAnonymousObjectCars(List<Car> cars)
+        {
+            return cars
                 .Select(car => new
                 {
                     Make = car.Make,
@@ -53,6 +71,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 })
                 .ToList<dynamic>();
         }
+
 
         private static List<Car> CreateRandomCars()
         {
@@ -136,6 +155,19 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 return $"\"{value}\"";
             }
             return value;
+        }
+
+        public static TheoryData<List<dynamic>> PlainObjectCars()
+        {
+            List<Car> randomCars = CreateRandomCars();
+            List<dynamic> dynamicCars = CreateDynamicCars(randomCars);
+            List<dynamic> anonymousObjectCars = CreateAnonymousObjectCars(randomCars);
+
+            return new TheoryData<List<dynamic>>
+            {
+                dynamicCars,
+                anonymousObjectCars
+            };
         }
     }
 }

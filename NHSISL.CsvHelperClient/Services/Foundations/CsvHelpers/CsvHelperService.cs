@@ -2,13 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using NHSISL.CsvHelperClient.Brokers.CsvHelper;
+using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers;
+using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using NHSISL.CsvHelperClient.Brokers.CsvHelper;
-using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers;
-using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
 
 namespace CsvHelperClient.Services.Foundations.CsvHelpers
 {
@@ -48,6 +48,9 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
         TryCatch(async () =>
         {
             ValidateMapObjectToCsvArguments(@object, hasHeaderRecord);
+            var type = typeof(T);
+            bool isPlainObject = type == typeof(object);
+            ValidateMapObjectToCsvArgumentCombination(isPlainObject, shouldAddTrailingComma);
 
             using (var stringWriter = this.csvHelperBroker.CreateStringWriter())
             using (var csvWriter = this.csvHelperBroker.CreateCsvWriter(stringWriter, hasHeaderRecord))
@@ -58,22 +61,29 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
                     csvWriter.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
                 }
 
-                if (hasHeaderRecord)
+                if (isPlainObject)
                 {
-                    csvWriter.WriteHeader<T>();
-                    csvWriter.NextRecord();
+                    await csvWriter.WriteRecordsAsync<T>(@object);
                 }
-
-                foreach (var item in @object)
+                else
                 {
-                    csvWriter.WriteRecord(item);
-
-                    if (shouldAddTrailingComma.HasValue && shouldAddTrailingComma.Value == true)
+                    if (hasHeaderRecord)
                     {
-                        csvWriter.WriteField("");
+                        csvWriter.WriteHeader<T>();
+                        csvWriter.NextRecord();
                     }
 
-                    csvWriter.NextRecord();
+                    foreach (var item in @object)
+                    {
+                        csvWriter.WriteRecord(item);
+
+                        if (shouldAddTrailingComma.HasValue && shouldAddTrailingComma.Value == true)
+                        {
+                            csvWriter.WriteField("");
+                        }
+
+                        csvWriter.NextRecord();
+                    }
                 }
 
                 stringWriter.Flush();
