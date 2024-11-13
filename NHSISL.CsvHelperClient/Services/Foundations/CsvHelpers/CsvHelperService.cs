@@ -6,7 +6,6 @@ using NHSISL.CsvHelperClient.Brokers.CsvHelper;
 using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers;
 using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,30 +60,63 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
 
                 if (hasHeaderRecord)
                 {
-                    var type = typeof(T);
-                    bool typeCheck = type.IsGenericType && type.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IDynamicMetaObjectProvider));
-                    if (typeCheck)
-                    {
-                        csvWriter.WriteDynamicHeader((System.Dynamic.IDynamicMetaObjectProvider)@object[0]);
-                        csvWriter.NextRecord();
-                    }
-                    else
-                    {
-                        csvWriter.WriteHeader<T>();
-                        csvWriter.NextRecord();
-                    }
+                    csvWriter.WriteHeader<T>();
+                    csvWriter.NextRecord();
                 }
 
                 foreach (var item in @object)
                 {
                     csvWriter.WriteRecord(item);
-
-                    if (shouldAddTrailingComma.HasValue && shouldAddTrailingComma.Value == true)
-                    {
-                        csvWriter.WriteField("");
-                    }
-
                     csvWriter.NextRecord();
+                }
+
+                stringWriter.Flush();
+                var csv = stringWriter.ToString();
+
+                return await ValueTask.FromResult(csv);
+            }
+        });
+
+        public ValueTask<string> MapObjectToCsvAsync<T>(
+            List<T> @object,
+            bool hasHeaderRecord,
+            Dictionary<string, int>? fieldMappings = null) =>
+        TryCatch(async () =>
+        {
+            ValidateMapObjectToCsvArguments(@object, hasHeaderRecord);
+
+            using (var stringWriter = this.csvHelperBroker.CreateStringWriter())
+            using (var csvWriter = this.csvHelperBroker.CreateCsvWriter(stringWriter, hasHeaderRecord))
+            {
+
+                if (fieldMappings != null)
+                {
+                    csvWriter.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
+                }
+
+                //if (hasHeaderRecord)
+                //{
+                //    csvWriter.WriteDynamicHeader((System.Dynamic.IDynamicMetaObjectProvider)@object[0]);
+                //    csvWriter.NextRecord();
+                //}
+
+                //foreach (var item in @object)
+                //{
+                //    csvWriter.WriteRecord(item);
+                //    csvWriter.NextRecord();
+                //}
+
+                if (hasHeaderRecord)
+                {
+                    await csvWriter.WriteRecordsAsync(@object);
+                }
+                else
+                {
+                    foreach (var item in @object)
+                    {
+                        csvWriter.WriteRecord(item);
+                        csvWriter.NextRecord();
+                    }
                 }
 
                 stringWriter.Flush();

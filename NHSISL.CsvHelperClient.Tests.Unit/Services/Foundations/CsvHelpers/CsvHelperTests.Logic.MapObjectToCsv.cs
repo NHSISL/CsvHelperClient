@@ -10,7 +10,6 @@ using Moq;
 using NHSISL.CsvHelperClient.Tests.Unit.Models;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
@@ -164,31 +163,28 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
         //}
 
         [Theory]
-        //[InlineData(false, false)]
-        //[InlineData(false, true)]
-        [InlineData(true, false)]
-        //[InlineData(true, true)]
+        [InlineData(false)]
+        [InlineData(true)]
         public async Task ShouldMapDynamicToCsvWithNoFieldMappingsAsync(
-            bool withHeader,
-            bool withTrailingComma)
+            bool withHeader)
         {
             // given
             int count = GetRandomNumber();
             List<Car> randomCars = CreateRandomCars();
             List<dynamic> dynamicCars = CreateDynamicCars(randomCars);
 
-            dynamic myObject = new ExpandoObject();
-            myObject.Rurabajuzo0 = "Vajugonipe";
-            myObject.Rurabajuzo1 = "Vajugonipe";
-            myObject.Rurabajuzo2 = "1111111111";
+            //dynamic myObject = new ExpandoObject();
+            //myObject.Rurabajuzo0 = "Vajugonipe";
+            //myObject.Rurabajuzo1 = "Vajugonipe";
+            //myObject.Rurabajuzo2 = "1111111111";
 
-            List<dynamic> myObjectList = new List<dynamic>();
-            myObjectList.Add(myObject);
+            //List<dynamic> dynamicCars = new List<dynamic>();
+            //dynamicCars.Add(myObject);
 
             string randomCsvFormattedcars = GetCsvRepresentationOfCar(
                 cars: randomCars,
                 hasHeaderRow: withHeader,
-                shouldAddTrailingComma: withTrailingComma);
+                shouldAddTrailingComma: false);
 
             string expectedCsvFormattedCars = randomCsvFormattedcars.DeepClone();
             List<Car> inputCars = randomCars;
@@ -216,10 +212,9 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 
             // when
             string actualCsvFormattedCars = await this.csvHelperService.MapObjectToCsvAsync(
-                @object: myObjectList,
+                @object: dynamicCars,
                 hasHeaderRecord: withHeader,
-                fieldMappings: fieldMappings,
-                shouldAddTrailingComma: withTrailingComma);
+                fieldMappings: fieldMappings);
 
             // then
             //actualCsvFormattedCars.Should().BeEquivalentTo(expectedCsvFormattedCars);
