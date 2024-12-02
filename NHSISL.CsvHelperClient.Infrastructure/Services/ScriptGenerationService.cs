@@ -16,11 +16,8 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
         public ScriptGenerationService() =>
             adotNetClient = new ADotNetClient();
 
-        public void GenerateBuildScript()
+        public void GenerateBuildScript(string branchName, string projectName, string dotNetVersion)
         {
-            string branchName = "main";
-            string dotNetVersion = "9.0.100";
-
             var githubPipeline = new GithubPipeline
             {
                 Name = "Build",
@@ -47,6 +44,10 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
 
                 Jobs = new Dictionary<string, Job>
                 {
+                    {
+                        "label",
+                        new LabelJobV2(runsOn: BuildMachines.UbuntuLatest)
+                    },
                     {
                         "Build",
                         new Job
@@ -92,7 +93,7 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
                         new TagJob(
                             runsOn: BuildMachines.UbuntuLatest,
                             dependsOn: "build",
-                            projectRelativePath: "NHSISL.CsvHelperClient/NHSISL.CsvHelperClient.csproj",
+                            projectRelativePath: $"{projectName}/{projectName}.csproj",
                             githubToken: "${{ secrets.PAT_FOR_TAGGING }}",
                             branchName: branchName)
                     },
