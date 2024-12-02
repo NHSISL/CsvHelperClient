@@ -2,13 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using NHSISL.CsvHelperClient.Brokers.CsvHelper;
+using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers;
+using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using NHSISL.CsvHelperClient.Brokers.CsvHelper;
-using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers;
-using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
 
 namespace CsvHelperClient.Services.Foundations.CsvHelpers
 {
@@ -48,6 +48,9 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
         TryCatch(async () =>
         {
             ValidateMapObjectToCsvArguments(@object, hasHeaderRecord);
+            var type = typeof(T);
+            bool isPlainObject = type == typeof(object);
+            ValidateMapObjectToCsvArgumentCombination(isPlainObject, shouldAddTrailingComma);
 
             using (var stringWriter = this.csvHelperBroker.CreateStringWriter())
             using (var csvWriter = this.csvHelperBroker.CreateCsvWriter(stringWriter, hasHeaderRecord))
@@ -57,9 +60,6 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
                 {
                     csvWriter.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
                 }
-
-                var type = typeof(T);
-                bool isPlainObject = type == typeof(object);
 
                 if (isPlainObject)
                 {
