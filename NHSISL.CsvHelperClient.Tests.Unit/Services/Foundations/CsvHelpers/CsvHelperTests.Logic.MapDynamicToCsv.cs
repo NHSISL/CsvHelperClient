@@ -2,17 +2,17 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
 using FluentAssertions;
 using Force.DeepCloner;
 using Moq;
 using NHSISL.CsvHelperClient.Tests.Unit.Models;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers

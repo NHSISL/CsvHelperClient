@@ -2,11 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using NHSISL.CsvHelperClient.Tests.Unit.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
