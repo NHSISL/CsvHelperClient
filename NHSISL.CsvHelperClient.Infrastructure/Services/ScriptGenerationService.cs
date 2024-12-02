@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using ADotNet.Clients;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets;
@@ -19,6 +19,7 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
         public void GenerateBuildScript()
         {
             string branchName = "main";
+            string dotNetVersion = "9.0.100";
 
             var githubPipeline = new GithubPipeline
             {
@@ -65,7 +66,7 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
 
                                     With = new TargetDotNetVersionV3
                                     {
-                                        DotNetVersion = "8.0.204"
+                                        DotNetVersion = dotNetVersion
                                     }
                                 },
 
@@ -97,9 +98,10 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
                     },
                     {
                         "publish",
-                        new PublishJob(
+                        new PublishJobV2(
                             runsOn: BuildMachines.UbuntuLatest,
                             dependsOn: "add_tag",
+                            dotNetVersion: dotNetVersion,
                             nugetApiKey: "${{ secrets.NUGET_ACCESS }}")
                     }
                 }
