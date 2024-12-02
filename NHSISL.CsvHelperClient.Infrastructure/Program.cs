@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 
 // ---------------------------------------------------------------
@@ -16,7 +16,10 @@ namespace NHSISL.CsvHelperClient.Infrastructure
         static void Main(string[] args)
         {
             var scriptGenerationService = new ScriptGenerationService();
-            scriptGenerationService.GenerateBuildScript();
+            scriptGenerationService.GenerateBuildScript(
+                branchName: "main",
+                projectName: "NHSISL.CsvHelperClient",
+                dotNetVersion: "9.0.100");
         }
     }
 }
