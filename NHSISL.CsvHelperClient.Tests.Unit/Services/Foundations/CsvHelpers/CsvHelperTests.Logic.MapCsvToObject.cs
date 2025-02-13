@@ -49,7 +49,6 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 
             using StringReader stringReader = new StringReader(inputCsvFormattedCars);
             using CsvReader csvReader = new CsvReader(stringReader, config);
-            var reader = new Mock<IReader>();
 
             this.csvHelperBrokerMock.Setup(broker =>
                 broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord, headerValidated))
