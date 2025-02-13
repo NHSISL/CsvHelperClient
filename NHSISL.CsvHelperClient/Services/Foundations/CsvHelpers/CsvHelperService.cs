@@ -19,15 +19,17 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
         public CsvHelperService(ICsvHelperBroker csvHelperBroker) =>
             this.csvHelperBroker = csvHelperBroker;
 
-        public ValueTask<List<T>> MapCsvToObjectAsync<T>(string data,
+        public ValueTask<List<T>> MapCsvToObjectAsync<T>(
+            string data,
             bool hasHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null) =>
+            Dictionary<string, int> fieldMappings = null,
+            bool? headerValidated = true) =>
             TryCatch(async () =>
             {
                 ValidateMapCsvToObjectArguments(data, hasHeaderRecord);
 
                 using (var reader = new StringReader(data))
-                using (var csvReader = this.csvHelperBroker.CreateCsvReader(reader, hasHeaderRecord))
+                using (var csvReader = this.csvHelperBroker.CreateCsvReader(reader, hasHeaderRecord, headerValidated))
                 {
                     if (fieldMappings != null)
                     {

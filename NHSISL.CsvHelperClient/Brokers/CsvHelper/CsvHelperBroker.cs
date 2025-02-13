@@ -4,22 +4,23 @@
 
 // Ignore Spelling: NHSISL
 
+using CsvHelper;
+using CsvHelper.Configuration;
 using System;
 using System.Globalization;
 using System.IO;
-using CsvHelper;
-using CsvHelper.Configuration;
 
 namespace NHSISL.CsvHelperClient.Brokers.CsvHelper
 {
     internal class CsvHelperBroker : ICsvHelperBroker
     {
-        public CsvReader CreateCsvReader(StringReader reader, bool hasHeaderRecord)
+        public CsvReader CreateCsvReader(StringReader reader, bool hasHeaderRecord, bool? headerValidated = true)
         {
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = hasHeaderRecord,
-                MissingFieldFound = null
+                MissingFieldFound = null,
+                HeaderValidated = headerValidated.Value == true ? ConfigurationFunctions.HeaderValidated : null
             };
 
             return new CsvReader(reader, config);
