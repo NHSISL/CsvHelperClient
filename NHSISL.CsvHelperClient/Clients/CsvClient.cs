@@ -44,7 +44,11 @@ namespace NHSISL.CsvHelperClient.Clients
         {
             try
             {
-                return await csvHelperService.MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings, headerValidated);
+                return await csvHelperService.MapCsvToObjectAsync<T>(
+                    data,
+                    hasHeaderRecord,
+                    fieldMappings,
+                    headerValidated);
             }
             catch (CsvHelperValidationException csvHelperValidationException)
             {
