@@ -2,16 +2,16 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
 using FluentAssertions;
 using Force.DeepCloner;
 using Moq;
 using NHSISL.CsvHelperClient.Tests.Unit.Models;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
@@ -38,31 +38,34 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             List<Car> expectedCars = randomCars.DeepClone();
             bool hasHeaderRecord = withHeader;
             Dictionary<string, int> fieldMappings = null;
+            bool headerValidated = true;
 
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = hasHeaderRecord,
-                MissingFieldFound = null
+                MissingFieldFound = null,
+                HeaderValidated = ConfigurationFunctions.HeaderValidated
             };
 
             using StringReader stringReader = new StringReader(inputCsvFormattedCars);
             using CsvReader csvReader = new CsvReader(stringReader, config);
 
             this.csvHelperBrokerMock.Setup(broker =>
-                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord))
+                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord, headerValidated))
                     .Returns(csvReader);
 
             // when
             List<Car> actualCars = await this.csvHelperService.MapCsvToObjectAsync<Car>(
                 data: inputCsvFormattedCars,
                 hasHeaderRecord,
-                fieldMappings);
+                fieldMappings,
+                headerValidated);
 
             // then
             actualCars.Should().BeEquivalentTo(expectedCars);
 
             this.csvHelperBrokerMock.Verify(broker =>
-                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord),
+                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord, headerValidated),
                     Times.Once());
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
@@ -86,6 +89,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             string inputCsvFormattedCars = randomCsvFormattedcars;
             List<Car> expectedCars = randomCars.DeepClone();
             bool hasHeaderRecord = withHeader;
+            bool headerValidated = true;
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
@@ -98,14 +102,15 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = hasHeaderRecord,
-                MissingFieldFound = null
+                MissingFieldFound = null,
+                HeaderValidated = ConfigurationFunctions.HeaderValidated
             };
 
             using StringReader stringReader = new StringReader(inputCsvFormattedCars);
             using CsvReader csvReader = new CsvReader(stringReader, config);
 
             this.csvHelperBrokerMock.Setup(broker =>
-                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord))
+                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord, headerValidated))
                     .Returns(csvReader);
 
             // when
@@ -118,7 +123,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             actualOptOuts.Should().BeEquivalentTo(expectedCars);
 
             this.csvHelperBrokerMock.Verify(broker =>
-                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord),
+                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord, headerValidated),
                     Times.Once());
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

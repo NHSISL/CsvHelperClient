@@ -2,14 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using NHSISL.CsvHelperClient.Tests.Unit.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
@@ -42,7 +42,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                     innerException: failedCsvHelperServiceException);
 
             this.csvHelperBrokerMock.Setup(broker =>
-                broker.CreateCsvReader(It.IsAny<StringReader>(), It.IsAny<bool>()))
+                broker.CreateCsvReader(It.IsAny<StringReader>(), It.IsAny<bool>(), It.IsAny<bool>()))
                     .Throws(serviceException);
 
             // when
@@ -58,7 +58,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             actualCsvHelperServiceException.Should().BeEquivalentTo(expectedCsvHelperServiceException);
 
             this.csvHelperBrokerMock.Verify(broker =>
-                broker.CreateCsvReader(It.IsAny<StringReader>(), It.IsAny<bool>()),
+                broker.CreateCsvReader(It.IsAny<StringReader>(), It.IsAny<bool>(), It.IsAny<bool>()),
                     Times.Once());
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
