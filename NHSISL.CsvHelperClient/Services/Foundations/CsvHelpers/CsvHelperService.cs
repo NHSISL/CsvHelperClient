@@ -50,6 +50,17 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
         TryCatch(async () =>
         {
             ValidateMapObjectToCsvArguments(@object, hasHeaderRecord);
+            string csv = await GetCsvFromListOfObjectsAsync(@object, hasHeaderRecord, fieldMappings, shouldAddTrailingComma);
+
+            return await ValueTask.FromResult(csv);
+        });
+
+        virtual internal async ValueTask<string> GetCsvFromListOfObjectsAsync<T>(
+            List<T> @object,
+            bool hasHeaderRecord,
+            Dictionary<string, int> fieldMappings = null,
+            bool? shouldAddTrailingComma = false)
+        {
             var type = typeof(T);
             bool isPlainObject = type == typeof(object);
             ValidateMapObjectToCsvArgumentCombination(isPlainObject, shouldAddTrailingComma);
@@ -93,6 +104,6 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
 
                 return await ValueTask.FromResult(csv);
             }
-        });
+        }
     }
 }
