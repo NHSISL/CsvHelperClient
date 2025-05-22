@@ -27,19 +27,10 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
             TryCatch(async () =>
             {
                 ValidateMapCsvToObjectArguments(data, hasHeaderRecord);
-
-                using (var reader = new StringReader(data))
-                using (var csvReader = this.csvHelperBroker.CreateCsvReader(reader, hasHeaderRecord, headerValidated))
-                {
-                    if (fieldMappings != null)
-                    {
-                        csvReader.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
-                    }
-
-                    var records = csvReader.GetRecords<T>().ToList();
-
-                    return await ValueTask.FromResult(records);
-                }
+                List<T> mappedObjects = await GetListOfMappedObjectsAsync<T>(data, hasHeaderRecord, fieldMappings, headerValidated);
+                
+                return mappedObjects;
+                
             });
 
         public ValueTask<string> MapObjectToCsvAsync<T>(
@@ -94,5 +85,25 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
                 return await ValueTask.FromResult(csv);
             }
         });
+
+        virtual internal async ValueTask<List<T>> GetListOfMappedObjectsAsync<T>(
+            string data,
+            bool hasHeaderRecord,
+            Dictionary<string, int> fieldMappings = null,
+            bool? headerValidated = true)
+        {
+            using (var reader = new StringReader(data))
+            using (var csvReader = this.csvHelperBroker.CreateCsvReader(reader, hasHeaderRecord, headerValidated))
+            {
+                if (fieldMappings != null)
+                {
+                    csvReader.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
+                }
+
+                var records = csvReader.GetRecords<T>().ToList();
+
+                return await ValueTask.FromResult(records);
+            }
+        }
     }
 }
