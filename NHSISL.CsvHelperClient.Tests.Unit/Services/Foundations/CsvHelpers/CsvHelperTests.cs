@@ -22,7 +22,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
     {
         private readonly Mock<ICsvHelperBroker> csvHelperBrokerMock;
         private readonly CsvHelperService csvHelperService;
-        private int test = 1;
+        private int test = 2;
 
         public CsvHelperTests()
         {
