@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using CsvHelperClient.Services.Foundations.CsvHelpers;
+﻿using CsvHelperClient.Services.Foundations.CsvHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NHSISL.CsvHelperClient.Brokers.CsvHelper;
 using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xeptions;
 
 namespace NHSISL.CsvHelperClient.Clients
@@ -39,11 +39,16 @@ namespace NHSISL.CsvHelperClient.Clients
         public async ValueTask<List<T>> MapCsvToObjectAsync<T>(
             string data,
             bool hasHeaderRecord,
-            Dictionary<string, int> fieldMappings = null)
+            Dictionary<string, int> fieldMappings = null,
+            bool headerValidated = true)
         {
             try
             {
-                return await csvHelperService.MapCsvToObjectAsync<T>(data, hasHeaderRecord, fieldMappings);
+                return await csvHelperService.MapCsvToObjectAsync<T>(
+                    data,
+                    hasHeaderRecord,
+                    fieldMappings,
+                    headerValidated);
             }
             catch (CsvHelperValidationException csvHelperValidationException)
             {
