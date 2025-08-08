@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSISL.CsvHelperClient.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHSISL.CsvHelperClient.Tests.Unit", "NHSISL.CsvHelperClient.Tests.Unit\NHSISL.CsvHelperClient.Tests.Unit.csproj", "{62E04B25-66F1-4D46-9F5E-4967DACC9CA6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHSISL.CsvHelperClient.Tests.Integration", "NHSISL.CsvHelperClient.Tests.Integration\NHSISL.CsvHelperClient.Tests.Integration.csproj", "{8DB4ADA5-29D3-40A6-A0D3-0F5A8B96674E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Acceptance|Any CPU = Acceptance|Any CPU
@@ -53,6 +55,14 @@ Global
 		{62E04B25-66F1-4D46-9F5E-4967DACC9CA6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{62E04B25-66F1-4D46-9F5E-4967DACC9CA6}.Test|Any CPU.ActiveCfg = Test|Any CPU
 		{62E04B25-66F1-4D46-9F5E-4967DACC9CA6}.Test|Any CPU.Build.0 = Test|Any CPU
+		{8DB4ADA5-29D3-40A6-A0D3-0F5A8B96674E}.Acceptance|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB4ADA5-29D3-40A6-A0D3-0F5A8B96674E}.Acceptance|Any CPU.Build.0 = Debug|Any CPU
+		{8DB4ADA5-29D3-40A6-A0D3-0F5A8B96674E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB4ADA5-29D3-40A6-A0D3-0F5A8B96674E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DB4ADA5-29D3-40A6-A0D3-0F5A8B96674E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DB4ADA5-29D3-40A6-A0D3-0F5A8B96674E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DB4ADA5-29D3-40A6-A0D3-0F5A8B96674E}.Test|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB4ADA5-29D3-40A6-A0D3-0F5A8B96674E}.Test|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
