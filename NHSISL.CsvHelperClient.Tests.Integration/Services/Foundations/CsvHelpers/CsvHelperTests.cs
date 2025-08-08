@@ -30,6 +30,36 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static List<dynamic> CreateDynamicCars(List<Car> cars)
+        {
+            return cars
+                .Select(car =>
+                {
+                    dynamic item = new ExpandoObject();
+                    item.Make = car.Make;
+                    item.Model = car.Model;
+                    item.Year = car.Year.ToString();
+                    item.Color = car.Color;
+
+                    return item;
+                })
+                .ToList<dynamic>();
+        }
+
+        private static List<object> CreateAnonymousObjectCars(List<Car> cars)
+        {
+            return cars
+                .Select(car => new
+                {
+                    Make = car.Make,
+                    Model = car.Model,
+                    Year = car.Year,
+                    Color = car.Color
+                })
+                .ToList<object>();
+        }
+
+
         private static List<Car> CreateRandomCars()
         {
             return CreateCarFiller()
@@ -56,6 +86,36 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
 
         private string GetCsvRepresentationOfCar(
             List<Car> cars,
+            bool hasHeaderRow,
+            bool shouldAddTrailingComma)
+        {
+            StringBuilder csvBuilder = new StringBuilder();
+
+            if (hasHeaderRow)
+            {
+                csvBuilder.AppendLine("Make,Model,Year,Color");
+            }
+
+            foreach (var car in cars)
+            {
+                string line = $"{WrapInQuotesIfContainsComma(car.Make)}," +
+                    $"{WrapInQuotesIfContainsComma(car.Model)}," +
+                    $"{WrapInQuotesIfContainsComma(car.Year.ToString())}," +
+                    $"{WrapInQuotesIfContainsComma(car.Color)}";
+
+                if (shouldAddTrailingComma)
+                {
+                    line += ",";
+                }
+
+                csvBuilder.AppendLine(line);
+            }
+
+            return csvBuilder.ToString();
+        }
+
+        private string GetCsvRepresentationOfDynamicObject(
+            List<dynamic> cars,
             bool hasHeaderRow,
             bool shouldAddTrailingComma)
         {

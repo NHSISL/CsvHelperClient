@@ -29,5 +29,27 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
             // then
             retrievedObjects.Should().BeEquivalentTo(expectedObjects);
         }
+
+        [Fact]
+        [Trait("Category", "Integration")]
+        public async Task ShouldMapCsvToDynamicObject()
+        {
+            // given
+            List<Car> randomCars = CreateRandomCars();
+            List<dynamic> anonCars = CreateDynamicCars(randomCars);
+            List<dynamic> expectedObjects = anonCars.DeepClone();
+
+            string randomCsvFormattedObjects = GetCsvRepresentationOfDynamicObject(
+                cars: anonCars,
+                hasHeaderRow: true,
+                shouldAddTrailingComma: false);
+
+            // when
+            List<dynamic> retrievedObjects =
+                await this.csvClient.MapCsvToObjectAsync<dynamic>(randomCsvFormattedObjects, hasHeaderRecord: true);
+
+            // then
+            retrievedObjects.Should().BeEquivalentTo(expectedObjects);
+        }
     }
 }
