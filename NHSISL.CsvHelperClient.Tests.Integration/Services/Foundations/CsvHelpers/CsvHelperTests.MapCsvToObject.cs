@@ -9,23 +9,22 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
 {
     public partial class CsvHelperTests
     {
-        [Fact(Skip = "Cannot get csvClient to return list of anonymous objects")]
+        [Fact]
         [Trait("Category", "Integration")]
-        public async Task ShouldMapCsvToAnonymousObject()
+        public async Task ShouldMapCsvToObject()
         {
             // given
             List<Car> randomCars = CreateRandomCars();
-            List<object> anonCars = CreateAnonymousObjectCars(randomCars);
-            List<object> expectedObjects = anonCars.DeepClone();
+            List<Car> expectedObjects = randomCars.DeepClone();
 
-            string randomCsvFormattedObjects = GetCsvRepresentationOfAnonymousObject(
-                cars: anonCars,
+            string randomCsvFormattedObjects = GetCsvRepresentationOfCar(
+                cars: randomCars,
                 hasHeaderRow: true,
                 shouldAddTrailingComma: false);
 
             // when
-            List<object> retrievedObjects =
-                await this.csvClient.MapCsvToObjectAsync<object>(randomCsvFormattedObjects, hasHeaderRecord: true);
+            List<Car> retrievedObjects =
+                await this.csvClient.MapCsvToObjectAsync<Car>(randomCsvFormattedObjects, hasHeaderRecord: true);
 
             // then
             retrievedObjects.Should().BeEquivalentTo(expectedObjects);

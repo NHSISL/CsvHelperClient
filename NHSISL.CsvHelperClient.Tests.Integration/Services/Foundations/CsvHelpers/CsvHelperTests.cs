@@ -84,21 +84,8 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
             return value;
         }
 
-        public static TheoryData<List<dynamic>> PlainObjectCars()
-        {
-            List<Car> randomCars = CreateRandomCars();
-            List<dynamic> dynamicCars = CreateDynamicCars(randomCars);
-            List<dynamic> anonymousObjectCars = CreateAnonymousObjectCars(randomCars);
-
-            return new TheoryData<List<dynamic>>
-            {
-                dynamicCars,
-                anonymousObjectCars
-            };
-        }
-
-        private string GetCsvRepresentationOfAnonymousObject(
-            List<object> cars,
+        private string GetCsvRepresentationOfCar(
+            List<Car> cars,
             bool hasHeaderRow,
             bool shouldAddTrailingComma)
         {
@@ -106,24 +93,15 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
 
             if (hasHeaderRow)
             {
-                var firstObject = cars[0];
-
-                var headers = firstObject.GetType()
-                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                        .Select(p => p.Name);
-
-                string headerLine = string.Join(",", headers);
-
-                csvBuilder.AppendLine(headerLine);
+                csvBuilder.AppendLine("Make,Model,Year,Color");
             }
 
             foreach (var car in cars)
             {
-                var values = car.GetType()
-                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                        .Select(p => WrapInQuotesIfContainsComma(p.GetValue(car)?.ToString()) ?? string.Empty);
-
-                string line = string.Join(",", values);
+                string line = $"{WrapInQuotesIfContainsComma(car.Make)}," +
+                    $"{WrapInQuotesIfContainsComma(car.Model)}," +
+                    $"{WrapInQuotesIfContainsComma(car.Year.ToString())}," +
+                    $"{WrapInQuotesIfContainsComma(car.Color)}";
 
                 if (shouldAddTrailingComma)
                 {
