@@ -104,6 +104,8 @@ jobs:
   Build:
     runs-on: ubuntu-latest
     steps:
+    - name: Enable long paths for Git
+      run: git config --system core.longpaths true
     - name: Check Out
       uses: actions/checkout@v3
     - name: Setup Dot Net Version

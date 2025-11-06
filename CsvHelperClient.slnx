@@ -1,0 +1,19 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Acceptance" />
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="Test" />
+  </Configurations>
+  <Folder Name="/Solution Items/" />
+  <Project Path="NHSISL.CsvHelperClient.Infrastructure/NHSISL.CsvHelperClient.Infrastructure.csproj">
+    <BuildType Solution="Acceptance|*" Project="Debug" />
+    <BuildType Solution="Test|*" Project="Debug" />
+  </Project>
+  <Project Path="NHSISL.CsvHelperClient.Tests.Acceptance/NHSISL.CsvHelperClient.Tests.Acceptance.csproj" />
+  <Project Path="NHSISL.CsvHelperClient.Tests.Unit/NHSISL.CsvHelperClient.Tests.Unit.csproj" />
+  <Project Path="NHSISL.CsvHelperClient/NHSISL.CsvHelperClient.csproj">
+    <BuildType Solution="Acceptance|*" Project="Debug" />
+    <BuildType Solution="Test|*" Project="Debug" />
+  </Project>
+</Solution>
