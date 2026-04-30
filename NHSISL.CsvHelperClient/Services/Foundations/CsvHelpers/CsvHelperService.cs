@@ -42,7 +42,7 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
             bool? headerValidated,
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            ValidateMapCsvToObjectArguments(data, hasHeaderRecord);
+            ValidateMapCsvToObjectArguments(data);
             cancellationToken.ThrowIfCancellationRequested();
 
             using var reader = new StreamReader(data, leaveOpen: true);
@@ -71,15 +71,15 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
             CancellationToken cancellationToken = default) =>
         TryCatch(async () =>
         {
-            ValidateMapObjectToCsvArguments(@object, hasHeaderRecord);
+            ValidateMapObjectToCsvArguments(@object);
             ValidateMapObjectToCsvOutputStream(outputStream);
             cancellationToken.ThrowIfCancellationRequested();
             var type = typeof(T);
             bool isPlainObject = type == typeof(object);
             ValidateMapObjectToCsvArgumentCombination(isPlainObject, shouldAddTrailingComma);
 
-            using var streamWriter = new StreamWriter(outputStream, leaveOpen: true);
-            using var csvWriter = this.csvHelperBroker.CreateCsvWriter(streamWriter, hasHeaderRecord);
+            await using var streamWriter = new StreamWriter(outputStream, leaveOpen: true);
+            await using var csvWriter = this.csvHelperBroker.CreateCsvWriter(streamWriter, hasHeaderRecord);
 
             if (fieldMappings != null)
             {
@@ -103,7 +103,7 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
                     cancellationToken.ThrowIfCancellationRequested();
                     csvWriter.WriteRecord(item);
 
-                    if (shouldAddTrailingComma.HasValue && shouldAddTrailingComma.Value == true)
+                    if (shouldAddTrailingComma == true)
                     {
                         csvWriter.WriteField("");
                     }

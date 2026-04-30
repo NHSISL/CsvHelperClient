@@ -11,15 +11,14 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
 {
     internal partial class CsvHelperService
     {
-        private static void ValidateMapCsvToObjectArguments(Stream data, bool hasHeaderRecord)
+        private static void ValidateMapCsvToObjectArguments(Stream data)
         {
             Validate<InvalidCsvHelperArgumentsException>(
                     message: "Invalid CSV helper arguments. Please fix the errors and try again.",
                     (Rule: IsInvalid(data), Parameter: "Data"));
         }
 
-        private static void ValidateMapObjectToCsvArguments<T>(
-            T @object, bool hasHeaderRecord)
+        private static void ValidateMapObjectToCsvArguments<T>(T @object)
         {
             Validate<InvalidCsvHelperArgumentsException>(
                     message: "Invalid CSV helper arguments. Please fix the errors and try again.",

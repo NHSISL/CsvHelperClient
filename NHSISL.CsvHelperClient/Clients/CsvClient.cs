@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using Microsoft.Extensions.DependencyInjection;
 using NHSISL.CsvHelperClient.Brokers.CsvHelper;
 using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;

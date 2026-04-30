@@ -10,7 +10,7 @@ namespace NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions
     public class CsvHelperClientValidationException : Xeption
     {
         public CsvHelperClientValidationException(Xeption innerException)
-            : base(message: "CV Helper Client validation error(s) occurred, fix the error(s) and try again.",
+            : base(message: "CSV Helper Client validation error(s) occurred, fix the error(s) and try again.",
                   innerException)
         { }
 
