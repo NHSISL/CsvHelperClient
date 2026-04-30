@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Tynamix.ObjectFiller;
@@ -35,9 +34,6 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static DateTimeOffset GetRandomDateTimeOffset() =>
-            new DateTimeRange(earliestDate: new DateTime()).GetValue();
-
         private static List<dynamic> CreateDynamicCars(List<Car> cars)
         {
             return cars
@@ -53,20 +49,6 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
                 })
                 .ToList<dynamic>();
         }
-
-        private static List<object> CreateAnonymousObjectCars(List<Car> cars)
-        {
-            return cars
-                .Select(car => new
-                {
-                    Make = car.Make,
-                    Model = car.Model,
-                    Year = car.Year,
-                    Color = car.Color
-                })
-                .ToList<object>();
-        }
-
 
         private static List<Car> CreateRandomCars()
         {
@@ -89,6 +71,7 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
             {
                 return $"\"{value}\"";
             }
+
             return value;
         }
 

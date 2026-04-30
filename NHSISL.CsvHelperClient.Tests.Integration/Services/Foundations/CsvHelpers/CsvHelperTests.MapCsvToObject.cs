@@ -1,4 +1,8 @@
-﻿using FluentAssertions;
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using FluentAssertions;
 using Force.DeepCloner;
 using NHSISL.CsvHelperClient.Tests.Integration.Models;
 using System.Collections.Generic;
