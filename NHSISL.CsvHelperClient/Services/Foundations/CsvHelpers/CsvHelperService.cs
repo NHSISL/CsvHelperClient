@@ -31,8 +31,7 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
                     data: data,
                     hasHeaderRecord: hasHeaderRecord,
                     fieldMappings: fieldMappings,
-                    headerValidated: headerValidated,
-                    cancellationToken: cancellationToken),
+                    headerValidated: headerValidated),
                 cancellationToken: cancellationToken);
 
         private async IAsyncEnumerable<T> MapCsvToObjectCoreAsync<T>(
@@ -40,7 +39,7 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
             bool hasHeaderRecord,
             Dictionary<string, int> fieldMappings,
             bool? headerValidated,
-            [EnumeratorCancellation] CancellationToken cancellationToken)
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             ValidateMapCsvToObjectArguments(data);
             cancellationToken.ThrowIfCancellationRequested();
@@ -112,8 +111,7 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
                 }
             }
 
-            await csvWriter.FlushAsync().ConfigureAwait(false);
-            await streamWriter.FlushAsync(cancellationToken).ConfigureAwait(false);
+
         });
     }
 }

@@ -17,7 +17,7 @@ using Xeptions;
 
 namespace NHSISL.CsvHelperClient.Clients
 {
-    public class CsvClient : ICsvClient
+    public sealed class CsvClient : ICsvClient
     {
         private readonly ServiceProvider serviceProvider;
         private readonly ICsvHelperService csvHelperService;
@@ -129,26 +129,26 @@ namespace NHSISL.CsvHelperClient.Clients
                         cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
             }
-            catch (CsvHelperValidationException meshOrchestrationValidationException)
+            catch (CsvHelperValidationException csvHelperValidationException)
             {
-                var innerException = meshOrchestrationValidationException.InnerException as Xeption;
+                var innerException = csvHelperValidationException.InnerException as Xeption;
 
                 throw new CsvHelperClientValidationException(
                     innerException,
                     innerException?.Data);
             }
-            catch (CsvHelperDependencyValidationException meshOrchestrationDependencyValidationException)
+            catch (CsvHelperDependencyValidationException csvHelperDependencyValidationException)
             {
-                var innerException = meshOrchestrationDependencyValidationException.InnerException as Xeption;
+                var innerException = csvHelperDependencyValidationException.InnerException as Xeption;
 
                 throw new CsvHelperClientValidationException(
                     innerException,
                     innerException?.Data);
             }
-            catch (CsvHelperDependencyException meshOrchestrationDependencyException)
+            catch (CsvHelperDependencyException csvHelperDependencyException)
             {
                 throw new CsvHelperClientDependencyException(
-                    meshOrchestrationDependencyException.InnerException as Xeption);
+                    csvHelperDependencyException.InnerException as Xeption);
             }
             catch (CsvHelperServiceException csvHelperServiceException)
             {
