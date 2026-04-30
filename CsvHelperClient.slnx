@@ -11,6 +11,9 @@
     <BuildType Solution="Test|*" Project="Debug" />
   </Project>
   <Project Path="NHSISL.CsvHelperClient.Tests.Acceptance/NHSISL.CsvHelperClient.Tests.Acceptance.csproj" />
+  <Project Path="NHSISL.CsvHelperClient.Tests.Integration/NHSISL.CsvHelperClient.Tests.Integration.csproj">
+    <BuildType Solution="Acceptance|*" Project="Debug" />
+  </Project>
   <Project Path="NHSISL.CsvHelperClient.Tests.Unit/NHSISL.CsvHelperClient.Tests.Unit.csproj" />
   <Project Path="NHSISL.CsvHelperClient/NHSISL.CsvHelperClient.csproj">
     <BuildType Solution="Acceptance|*" Project="Debug" />

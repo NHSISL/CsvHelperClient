@@ -11,6 +11,8 @@ using NHSISL.CsvHelperClient.Tests.Unit.Models;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -47,25 +49,32 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 HeaderValidated = ConfigurationFunctions.HeaderValidated
             };
 
-            using StringReader stringReader = new StringReader(inputCsvFormattedCars);
-            using CsvReader csvReader = new CsvReader(stringReader, config);
+            byte[] csvBytes = Encoding.UTF8.GetBytes(inputCsvFormattedCars);
+            using MemoryStream inputStream = new MemoryStream(csvBytes);
+            using StreamReader streamReader = new StreamReader(new MemoryStream(csvBytes));
+            using CsvReader csvReader = new CsvReader(streamReader, config);
 
             this.csvHelperBrokerMock.Setup(broker =>
-                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord, headerValidated))
+                broker.CreateCsvReader(It.IsAny<StreamReader>(), hasHeaderRecord, headerValidated))
                     .Returns(csvReader);
 
             // when
-            List<Car> actualCars = await this.csvHelperService.MapCsvToObjectAsync<Car>(
-                data: inputCsvFormattedCars,
+            var actualCars = new List<Car>();
+
+            await foreach (var car in this.csvHelperService.MapCsvToObjectAsync<Car>(
+                data: inputStream,
                 hasHeaderRecord,
                 fieldMappings,
-                headerValidated);
+                headerValidated))
+            {
+                actualCars.Add(car);
+            }
 
             // then
             actualCars.Should().BeEquivalentTo(expectedCars);
 
             this.csvHelperBrokerMock.Verify(broker =>
-                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord, headerValidated),
+                broker.CreateCsvReader(It.IsAny<StreamReader>(), hasHeaderRecord, headerValidated),
                     Times.Once());
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();
@@ -106,24 +115,31 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 HeaderValidated = ConfigurationFunctions.HeaderValidated
             };
 
-            using StringReader stringReader = new StringReader(inputCsvFormattedCars);
-            using CsvReader csvReader = new CsvReader(stringReader, config);
+            byte[] csvBytes = Encoding.UTF8.GetBytes(inputCsvFormattedCars);
+            using MemoryStream inputStream = new MemoryStream(csvBytes);
+            using StreamReader streamReader = new StreamReader(new MemoryStream(csvBytes));
+            using CsvReader csvReader = new CsvReader(streamReader, config);
 
             this.csvHelperBrokerMock.Setup(broker =>
-                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord, headerValidated))
+                broker.CreateCsvReader(It.IsAny<StreamReader>(), hasHeaderRecord, headerValidated))
                     .Returns(csvReader);
 
             // when
-            List<Car> actualOptOuts = await this.csvHelperService.MapCsvToObjectAsync<Car>(
-                data: inputCsvFormattedCars,
+            var actualOptOuts = new List<Car>();
+
+            await foreach (var car in this.csvHelperService.MapCsvToObjectAsync<Car>(
+                data: inputStream,
                 hasHeaderRecord: hasHeaderRecord,
-                fieldMappings);
+                fieldMappings))
+            {
+                actualOptOuts.Add(car);
+            }
 
             // then
             actualOptOuts.Should().BeEquivalentTo(expectedCars);
 
             this.csvHelperBrokerMock.Verify(broker =>
-                broker.CreateCsvReader(It.IsAny<StringReader>(), hasHeaderRecord, headerValidated),
+                broker.CreateCsvReader(It.IsAny<StreamReader>(), hasHeaderRecord, headerValidated),
                     Times.Once());
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

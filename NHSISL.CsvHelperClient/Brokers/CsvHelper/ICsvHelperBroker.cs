@@ -9,8 +9,7 @@ namespace NHSISL.CsvHelperClient.Brokers.CsvHelper
 {
     internal interface ICsvHelperBroker
     {
-        CsvReader CreateCsvReader(StringReader reader, bool hasHeaderRecord, bool? headerValidated);
-        CsvWriter CreateCsvWriter(StringWriter writer, bool hasHeaderRecord);
-        StringWriter CreateStringWriter();
+        CsvReader CreateCsvReader(StreamReader reader, bool hasHeaderRecord, bool? headerValidated);
+        CsvWriter CreateCsvWriter(StreamWriter writer, bool hasHeaderRecord);
     }
 }

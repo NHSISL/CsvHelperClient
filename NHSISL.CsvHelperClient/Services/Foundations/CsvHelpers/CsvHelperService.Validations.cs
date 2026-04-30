@@ -4,13 +4,14 @@
 
 using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using System;
+using System.IO;
 using Xeptions;
 
-namespace CsvHelperClient.Services.Foundations.CsvHelpers
+namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
 {
     internal partial class CsvHelperService
     {
-        private static void ValidateMapCsvToObjectArguments(string data, bool hasHeaderRecord)
+        private static void ValidateMapCsvToObjectArguments(Stream data, bool hasHeaderRecord)
         {
             Validate<InvalidCsvHelperArgumentsException>(
                     message: "Invalid CSV helper arguments. Please fix the errors and try again.",
@@ -25,6 +26,13 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
                     (Rule: IsInvalid(@object), Parameter: "Object"));
         }
 
+        private static void ValidateMapObjectToCsvOutputStream(Stream outputStream)
+        {
+            Validate<InvalidCsvHelperArgumentsException>(
+                    message: "Invalid CSV helper arguments. Please fix the errors and try again.",
+                    (Rule: IsInvalid(outputStream), Parameter: "OutputStream"));
+        }
+
         private static void ValidateMapObjectToCsvArgumentCombination(bool isPlainObject, bool? shouldAddTrailingComma)
         {
             if (isPlainObject == true && shouldAddTrailingComma == true)
@@ -34,10 +42,10 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
             }
         }
 
-        private static dynamic IsInvalid(string text) => new
+        private static dynamic IsInvalid(Stream stream) => new
         {
-            Condition = string.IsNullOrWhiteSpace(text),
-            Message = "Text is required"
+            Condition = stream is null,
+            Message = "Stream is required"
         };
 
         private static dynamic IsInvalid(object @object) => new

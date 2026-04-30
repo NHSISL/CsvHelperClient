@@ -2,6 +2,8 @@
 using Force.DeepCloner;
 using NHSISL.CsvHelperClient.Tests.Integration.Models;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -22,9 +24,18 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
                 hasHeaderRow: true,
                 shouldAddTrailingComma: false);
 
+            byte[] csvBytes = Encoding.UTF8.GetBytes(randomCsvFormattedObjects);
+            using MemoryStream inputStream = new MemoryStream(csvBytes);
+
             // when
-            List<Car> retrievedObjects =
-                await this.csvClient.MapCsvToObjectAsync<Car>(randomCsvFormattedObjects, hasHeaderRecord: true);
+            var retrievedObjects = new List<Car>();
+
+            await foreach (var item in this.csvClient.MapCsvToObjectAsync<Car>(
+                inputStream,
+                hasHeaderRecord: true))
+            {
+                retrievedObjects.Add(item);
+            }
 
             // then
             retrievedObjects.Should().BeEquivalentTo(expectedObjects);
@@ -44,9 +55,18 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
                 hasHeaderRow: true,
                 shouldAddTrailingComma: false);
 
+            byte[] csvBytes = Encoding.UTF8.GetBytes(randomCsvFormattedObjects);
+            using MemoryStream inputStream = new MemoryStream(csvBytes);
+
             // when
-            List<dynamic> retrievedObjects =
-                await this.csvClient.MapCsvToObjectAsync<dynamic>(randomCsvFormattedObjects, hasHeaderRecord: true);
+            var retrievedObjects = new List<dynamic>();
+
+            await foreach (var item in this.csvClient.MapCsvToObjectAsync<dynamic>(
+                inputStream,
+                hasHeaderRecord: true))
+            {
+                retrievedObjects.Add(item);
+            }
 
             // then
             retrievedObjects.Should().BeEquivalentTo(expectedObjects);

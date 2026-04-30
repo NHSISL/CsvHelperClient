@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -46,33 +47,29 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 MissingFieldFound = null
             };
 
-            using StringWriter stringWriter = new StringWriter();
-            using CsvWriter csvWriter = new CsvWriter(stringWriter, config);
+            using MemoryStream outputStream = new MemoryStream();
+            using StreamWriter streamWriter = new StreamWriter(outputStream, leaveOpen: true);
+            using CsvWriter csvWriter = new CsvWriter(streamWriter, config);
 
             this.csvHelperBrokerMock.Setup(broker =>
-                broker.CreateStringWriter())
-                    .Returns(stringWriter);
-
-            this.csvHelperBrokerMock.Setup(broker =>
-                broker.CreateCsvWriter(It.IsAny<StringWriter>(), withHeader))
+                broker.CreateCsvWriter(It.IsAny<StreamWriter>(), withHeader))
                     .Returns(csvWriter);
 
             // when
-            string actualCsvFormattedCars = await this.csvHelperService.MapObjectToCsvAsync<dynamic>(
+            await this.csvHelperService.MapObjectToCsvAsync<dynamic>(
                 @object: dynamicCars,
+                outputStream: outputStream,
                 hasHeaderRecord: withHeader,
                 fieldMappings,
                 shouldAddTrailingComma: false);
+
+            string actualCsvFormattedCars = Encoding.UTF8.GetString(outputStream.ToArray());
 
             // then
             actualCsvFormattedCars.Should().BeEquivalentTo(expectedCsvFormattedCars);
 
             this.csvHelperBrokerMock.Verify(broker =>
-                broker.CreateStringWriter(),
-                    Times.Once);
-
-            this.csvHelperBrokerMock.Verify(broker =>
-                broker.CreateCsvWriter(It.IsAny<StringWriter>(), withHeader),
+                broker.CreateCsvWriter(It.IsAny<StreamWriter>(), withHeader),
                     Times.Once());
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

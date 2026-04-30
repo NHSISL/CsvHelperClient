@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -37,24 +38,27 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                     innerException: failedCsvHelperServiceException);
 
             this.csvHelperBrokerMock.Setup(broker =>
-                broker.CreateStringWriter())
+                broker.CreateCsvWriter(It.IsAny<StreamWriter>(), It.IsAny<bool>()))
                     .Throws(serviceException);
 
+            using MemoryStream outputStream = new MemoryStream();
+
             // when
-            ValueTask<string> mapCsvToObjectTask = this.csvHelperService.MapObjectToCsvAsync<Car>(
+            ValueTask mapObjectToCsvTask = this.csvHelperService.MapObjectToCsvAsync<Car>(
                 @object: randomCars,
+                outputStream: outputStream,
                 hasHeaderRecord: withHeaderRecord,
                 fieldMappings,
                 shouldAddTrailingComma);
 
             CsvHelperServiceException actualCsvHelperServiceException =
-                await Assert.ThrowsAsync<CsvHelperServiceException>(mapCsvToObjectTask.AsTask);
+                await Assert.ThrowsAsync<CsvHelperServiceException>(mapObjectToCsvTask.AsTask);
 
             // then
             actualCsvHelperServiceException.Should().BeEquivalentTo(expectedCsvHelperServiceException);
 
             this.csvHelperBrokerMock.Verify(broker =>
-                broker.CreateStringWriter(),
+                broker.CreateCsvWriter(It.IsAny<StreamWriter>(), It.IsAny<bool>()),
                         Times.Once());
 
             this.csvHelperBrokerMock.VerifyNoOtherCalls();

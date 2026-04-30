@@ -6,6 +6,7 @@ using FluentAssertions;
 using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using NHSISL.CsvHelperClient.Tests.Unit.Models;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -18,7 +19,6 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
         {
             // given
             List<Car> nullCars = null;
-            string randomCsvFormattedOptOutData = GetRandomString();
             bool withHeaderRecord = true;
             Dictionary<string, int> fieldMappings = null;
             bool shouldAddTrailingComma = true;
@@ -35,9 +35,12 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                     message: "CSV helper validation errors occurred, fix the errors and try again.",
                     innerException: invalidCsvHelperArgumentsException);
 
+            using MemoryStream outputStream = new MemoryStream();
+
             // when
-            ValueTask<string> mapObjectToCsvTask = this.csvHelperService.MapObjectToCsvAsync(
+            ValueTask mapObjectToCsvTask = this.csvHelperService.MapObjectToCsvAsync(
                 @object: nullCars,
+                outputStream: outputStream,
                 hasHeaderRecord: withHeaderRecord,
                 fieldMappings,
                 shouldAddTrailingComma);
@@ -70,9 +73,12 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                     message: "CSV helper validation errors occurred, fix the errors and try again.",
                     innerException: invalidCsvHelperArgumentCombinationException);
 
+            using MemoryStream outputStream = new MemoryStream();
+
             // when
-            ValueTask<string> mapObjectToCsvTask = this.csvHelperService.MapObjectToCsvAsync(
+            ValueTask mapObjectToCsvTask = this.csvHelperService.MapObjectToCsvAsync(
                 @object: plainObjectCars,
+                outputStream: outputStream,
                 hasHeaderRecord: withHeaderRecord,
                 fieldMappings,
                 shouldAddTrailingComma);

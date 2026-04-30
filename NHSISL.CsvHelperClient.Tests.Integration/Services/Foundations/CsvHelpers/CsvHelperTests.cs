@@ -10,18 +10,26 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Tynamix.ObjectFiller;
 using Xunit;
 
 namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpers
 {
-    public partial class CsvHelperTests
+    public partial class CsvHelperTests : IAsyncLifetime
     {
         private readonly CsvClient csvClient;
 
         public CsvHelperTests()
         {
             this.csvClient = new CsvClient();
+        }
+
+        public Task InitializeAsync() => Task.CompletedTask;
+
+        public async Task DisposeAsync()
+        {
+            await this.csvClient.DisposeAsync().ConfigureAwait(false);
         }
 
         private static int GetRandomNumber() =>

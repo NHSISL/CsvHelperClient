@@ -1,46 +1,76 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
-using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
+using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using Xeptions;
 
-namespace CsvHelperClient.Services.Foundations.CsvHelpers
+namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
 {
     internal partial class CsvHelperService
     {
-        private delegate ValueTask<string> ReturningStringFunction();
-        private delegate ValueTask<List<T>> ReturningObjectFunction<T>();
+        private delegate ValueTask ReturningValueTaskFunction();
+        private delegate IAsyncEnumerable<T> ReturningAsyncEnumerableFunction<T>();
 
-        private async ValueTask<List<T>> TryCatch<T>(ReturningObjectFunction<T> returningObjectFunction)
+        private async IAsyncEnumerable<T> TryCatch<T>(
+            ReturningAsyncEnumerableFunction<T> returningAsyncEnumerableFunction,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
+            IAsyncEnumerator<T> enumerator = returningAsyncEnumerableFunction()
+                .GetAsyncEnumerator(cancellationToken);
+
             try
             {
-                return await returningObjectFunction();
-            }
-            catch (InvalidCsvHelperArgumentsException invalidCsvHelperArgumentsException)
-            {
-                throw CreateValidationException(invalidCsvHelperArgumentsException);
-            }
-            catch (Exception exception)
-            {
-                var failedCsvHelperServiceException =
-                    new FailedCsvHelperServiceException(
-                        message: "Failed CSV helper service error occurred, contact support.",
-                        innerException: exception);
+                while (true)
+                {
+                    bool hasNext;
 
-                throw CreateServiceException(failedCsvHelperServiceException);
+                    try
+                    {
+                        hasNext = await enumerator.MoveNextAsync().ConfigureAwait(false);
+                    }
+                    catch (InvalidCsvHelperArgumentsException invalidCsvHelperArgumentsException)
+                    {
+                        throw CreateValidationException(invalidCsvHelperArgumentsException);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (Exception exception)
+                    {
+                        var failedCsvHelperServiceException =
+                            new FailedCsvHelperServiceException(
+                                message: "Failed CSV helper service error occurred, contact support.",
+                                innerException: exception);
+
+                        throw CreateServiceException(failedCsvHelperServiceException);
+                    }
+
+                    if (!hasNext)
+                    {
+                        yield break;
+                    }
+
+                    yield return enumerator.Current;
+                }
+            }
+            finally
+            {
+                await enumerator.DisposeAsync().ConfigureAwait(false);
             }
         }
 
-        private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
+        private async ValueTask TryCatch(ReturningValueTaskFunction returningValueTaskFunction)
         {
             try
             {
-                return await returningStringFunction();
+                await returningValueTaskFunction().ConfigureAwait(false);
             }
             catch (InvalidCsvHelperArgumentsException invalidCsvHelperArgumentsException)
             {
@@ -49,6 +79,10 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
             catch (InvalidCsvHelperArgumentCombinationException invalidCsvHelperArgumentCombinationException)
             {
                 throw CreateValidationException(invalidCsvHelperArgumentCombinationException);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (Exception exception)
             {

@@ -1,11 +1,13 @@
-﻿using CsvHelperClient.Services.Foundations.CsvHelpers;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NHSISL.CsvHelperClient.Brokers.CsvHelper;
 using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
 using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Xeptions;
 
@@ -13,89 +15,131 @@ namespace NHSISL.CsvHelperClient.Clients
 {
     public class CsvClient : ICsvClient
     {
+        private readonly ServiceProvider serviceProvider;
         private readonly ICsvHelperService csvHelperService;
 
         public CsvClient()
         {
-            IHost host = RegisterServices();
-            csvHelperService = host.Services.GetRequiredService<ICsvHelperService>();
+            serviceProvider = RegisterServices();
+            csvHelperService = serviceProvider.GetRequiredService<ICsvHelperService>();
         }
 
-        private static IHost RegisterServices()
+        private static ServiceProvider RegisterServices()
         {
-            IHostBuilder builder = Host.CreateDefaultBuilder();
+            var services = new ServiceCollection();
+            services.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
+            services.AddTransient<ICsvHelperService, CsvHelperService>();
 
-            builder.ConfigureServices(configuration =>
-            {
-                configuration.AddTransient<ICsvHelperBroker, CsvHelperBroker>();
-                configuration.AddTransient<ICsvHelperService, CsvHelperService>();
-            });
-
-            IHost host = builder.Build();
-
-            return host;
+            return services.BuildServiceProvider();
         }
 
-        public async ValueTask<List<T>> MapCsvToObjectAsync<T>(
-            string data,
+        public async ValueTask DisposeAsync()
+        {
+            await serviceProvider.DisposeAsync().ConfigureAwait(false);
+        }
+
+        public async IAsyncEnumerable<T> MapCsvToObjectAsync<T>(
+            Stream data,
             bool hasHeaderRecord,
             Dictionary<string, int> fieldMappings = null,
-            bool headerValidated = true)
+            bool? headerValidated = true,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
+            IAsyncEnumerator<T> enumerator = csvHelperService
+                .MapCsvToObjectAsync<T>(
+                    data: data,
+                    hasHeaderRecord: hasHeaderRecord,
+                    fieldMappings: fieldMappings,
+                    headerValidated: headerValidated,
+                    cancellationToken: cancellationToken)
+                .GetAsyncEnumerator(cancellationToken);
+
             try
             {
-                return await csvHelperService.MapCsvToObjectAsync<T>(
-                    data,
-                    hasHeaderRecord,
-                    fieldMappings,
-                    headerValidated);
+                while (true)
+                {
+                    bool hasNext;
+
+                    try
+                    {
+                        hasNext = await enumerator.MoveNextAsync().ConfigureAwait(false);
+                    }
+                    catch (CsvHelperValidationException csvHelperValidationException)
+                    {
+                        var innerException = csvHelperValidationException.InnerException as Xeption;
+
+                        throw new CsvHelperClientValidationException(
+                            innerException,
+                            innerException?.Data);
+                    }
+                    catch (CsvHelperDependencyValidationException csvHelperDependencyValidationException)
+                    {
+                        var innerException = csvHelperDependencyValidationException.InnerException as Xeption;
+
+                        throw new CsvHelperClientValidationException(
+                            innerException,
+                            innerException?.Data);
+                    }
+                    catch (CsvHelperDependencyException csvHelperDependencyException)
+                    {
+                        throw new CsvHelperClientDependencyException(
+                            csvHelperDependencyException.InnerException as Xeption);
+                    }
+                    catch (CsvHelperServiceException csvHelperServiceException)
+                    {
+                        throw new CsvHelperClientServiceException(
+                            csvHelperServiceException.InnerException as Xeption);
+                    }
+
+                    if (!hasNext)
+                    {
+                        yield break;
+                    }
+
+                    yield return enumerator.Current;
+                }
             }
-            catch (CsvHelperValidationException csvHelperValidationException)
+            finally
             {
-                throw new CsvHelperClientValidationException(
-                    csvHelperValidationException.InnerException as Xeption,
-                    csvHelperValidationException.InnerException.Data);
-            }
-            catch (CsvHelperDependencyValidationException csvHelperDependencyValidationException)
-            {
-                throw new CsvHelperClientValidationException(
-                    csvHelperDependencyValidationException.InnerException as Xeption,
-                    csvHelperDependencyValidationException.InnerException.Data);
-            }
-            catch (CsvHelperDependencyException csvHelperDependencyException)
-            {
-                throw new CsvHelperClientDependencyException(
-                    csvHelperDependencyException.InnerException as Xeption);
-            }
-            catch (CsvHelperServiceException csvHelperServiceException)
-            {
-                throw new CsvHelperClientServiceException(
-                    csvHelperServiceException.InnerException as Xeption);
+                await enumerator.DisposeAsync().ConfigureAwait(false);
             }
         }
 
-        public async ValueTask<string> MapObjectToCsvAsync<T>(
+        public async ValueTask MapObjectToCsvAsync<T>(
             List<T> @object,
+            Stream outputStream,
             bool addHeaderRecord,
             Dictionary<string, int> fieldMappings = null,
-            bool? shouldAddTrailingComma = false)
+            bool? shouldAddTrailingComma = false,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await csvHelperService
-                    .MapObjectToCsvAsync(@object, addHeaderRecord, fieldMappings, shouldAddTrailingComma);
+                await csvHelperService
+                    .MapObjectToCsvAsync(
+                        @object: @object,
+                        outputStream: outputStream,
+                        hasHeaderRecord: addHeaderRecord,
+                        fieldMappings: fieldMappings,
+                        shouldAddTrailingComma: shouldAddTrailingComma,
+                        cancellationToken: cancellationToken)
+                    .ConfigureAwait(false);
             }
             catch (CsvHelperValidationException meshOrchestrationValidationException)
             {
+                var innerException = meshOrchestrationValidationException.InnerException as Xeption;
+
                 throw new CsvHelperClientValidationException(
-                    meshOrchestrationValidationException.InnerException as Xeption,
-                    meshOrchestrationValidationException.InnerException.Data);
+                    innerException,
+                    innerException?.Data);
             }
             catch (CsvHelperDependencyValidationException meshOrchestrationDependencyValidationException)
             {
+                var innerException = meshOrchestrationDependencyValidationException.InnerException as Xeption;
+
                 throw new CsvHelperClientValidationException(
-                    meshOrchestrationDependencyValidationException.InnerException as Xeption,
-                    meshOrchestrationDependencyValidationException.InnerException.Data);
+                    innerException,
+                    innerException?.Data);
             }
             catch (CsvHelperDependencyException meshOrchestrationDependencyException)
             {
