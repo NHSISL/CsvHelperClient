@@ -59,7 +59,7 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
                                 new GithubTask
                                 {
                                     Name = "Enable long paths for Git",
-                                    Run = "git config --system core.longpaths true"
+                                    Run = "git config --global core.longpaths true"
                                 },
 
                                 new CheckoutTaskV3
