@@ -22,10 +22,10 @@ namespace NHSISL.CsvHelperClient.Tests.Acceptance.Clients.CsvHelpers
             this.csvClient = new CsvClient();
         }
 
-        public System.Threading.Tasks.Task InitializeAsync() =>
-            System.Threading.Tasks.Task.CompletedTask;
+        public System.Threading.Tasks.ValueTask InitializeAsync() =>
+            System.Threading.Tasks.ValueTask.CompletedTask;
 
-        public async System.Threading.Tasks.Task DisposeAsync()
+        public async System.Threading.Tasks.ValueTask DisposeAsync()
         {
             await this.csvClient.DisposeAsync().ConfigureAwait(false);
         }
