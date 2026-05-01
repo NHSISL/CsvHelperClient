@@ -59,7 +59,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             await this.csvHelperService.MapObjectToCsvAsync<dynamic>(
                 @object: dynamicCars,
                 outputStream: outputStream,
-                hasHeaderRecord: withHeader,
+                addHeaderRecord: withHeader,
                 fieldMappings,
                 shouldAddTrailingComma: false);
 

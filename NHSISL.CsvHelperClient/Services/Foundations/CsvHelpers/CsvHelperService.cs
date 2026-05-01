@@ -64,7 +64,7 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
         public ValueTask MapObjectToCsvAsync<T>(
             List<T> @object,
             Stream outputStream,
-            bool hasHeaderRecord,
+            bool addHeaderRecord,
             Dictionary<string, int> fieldMappings = null,
             bool? shouldAddTrailingComma = false,
             CancellationToken cancellationToken = default) =>
@@ -78,7 +78,7 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
             ValidateMapObjectToCsvArgumentCombination(isPlainObject, shouldAddTrailingComma);
 
             await using var streamWriter = new StreamWriter(outputStream, leaveOpen: true);
-            await using var csvWriter = this.csvHelperBroker.CreateCsvWriter(streamWriter, hasHeaderRecord);
+            await using var csvWriter = this.csvHelperBroker.CreateCsvWriter(streamWriter, addHeaderRecord);
 
             if (fieldMappings != null)
             {
@@ -91,7 +91,7 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
             }
             else
             {
-                if (hasHeaderRecord)
+                if (addHeaderRecord)
                 {
                     csvWriter.WriteHeader<T>();
                     await csvWriter.NextRecordAsync().ConfigureAwait(false);

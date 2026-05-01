@@ -62,7 +62,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             await this.csvHelperService.MapObjectToCsvAsync(
                 @object: inputCars,
                 outputStream: outputStream,
-                hasHeaderRecord: withHeader,
+                addHeaderRecord: withHeader,
                 fieldMappings,
                 shouldAddTrailingComma: withTrailingComma);
 
@@ -126,7 +126,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             await this.csvHelperService.MapObjectToCsvAsync(
                 @object: inputCars,
                 outputStream: outputStream,
-                hasHeaderRecord: withHeader,
+                addHeaderRecord: withHeader,
                 fieldMappings,
                 shouldAddTrailingComma: withTrailingComma);
 

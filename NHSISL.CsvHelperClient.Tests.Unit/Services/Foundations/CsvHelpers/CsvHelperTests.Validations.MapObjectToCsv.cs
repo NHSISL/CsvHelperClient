@@ -41,7 +41,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 this.csvHelperService.MapObjectToCsvAsync(
                     @object: randomCars,
                     outputStream: nullOutputStream,
-                    hasHeaderRecord: withHeaderRecord,
+                    addHeaderRecord: withHeaderRecord,
                     fieldMappings,
                     shouldAddTrailingComma,
                     cancellationToken: TestContext.Current.CancellationToken);
@@ -81,7 +81,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             ValueTask mapObjectToCsvTask = this.csvHelperService.MapObjectToCsvAsync(
                 @object: nullCars,
                 outputStream: outputStream,
-                hasHeaderRecord: withHeaderRecord,
+                addHeaderRecord: withHeaderRecord,
                 fieldMappings,
                 shouldAddTrailingComma);
 
@@ -119,7 +119,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             ValueTask mapObjectToCsvTask = this.csvHelperService.MapObjectToCsvAsync(
                 @object: plainObjectCars,
                 outputStream: outputStream,
-                hasHeaderRecord: withHeaderRecord,
+                addHeaderRecord: withHeaderRecord,
                 fieldMappings,
                 shouldAddTrailingComma);
 

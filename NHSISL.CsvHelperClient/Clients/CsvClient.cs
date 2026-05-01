@@ -123,7 +123,7 @@ namespace NHSISL.CsvHelperClient.Clients
                     .MapObjectToCsvAsync(
                         @object: @object,
                         outputStream: outputStream,
-                        hasHeaderRecord: addHeaderRecord,
+                        addHeaderRecord: addHeaderRecord,
                         fieldMappings: fieldMappings,
                         shouldAddTrailingComma: shouldAddTrailingComma,
                         cancellationToken: cancellationToken)

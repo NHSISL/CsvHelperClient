@@ -51,12 +51,11 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 
             byte[] csvBytes = Encoding.UTF8.GetBytes(inputCsvFormattedCars);
             using MemoryStream inputStream = new MemoryStream(csvBytes);
-            using StreamReader streamReader = new StreamReader(new MemoryStream(csvBytes));
-            using CsvReader csvReader = new CsvReader(streamReader, config);
 
             this.csvHelperBrokerMock.Setup(broker =>
                 broker.CreateCsvReader(It.IsAny<StreamReader>(), hasHeaderRecord, headerValidated))
-                    .Returns(csvReader);
+                    .Returns((StreamReader reader, bool header, bool? validated) =>
+                        new CsvReader(reader, config));
 
             // when
             var actualCars = new List<Car>();
@@ -117,12 +116,11 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 
             byte[] csvBytes = Encoding.UTF8.GetBytes(inputCsvFormattedCars);
             using MemoryStream inputStream = new MemoryStream(csvBytes);
-            using StreamReader streamReader = new StreamReader(new MemoryStream(csvBytes));
-            using CsvReader csvReader = new CsvReader(streamReader, config);
 
             this.csvHelperBrokerMock.Setup(broker =>
                 broker.CreateCsvReader(It.IsAny<StreamReader>(), hasHeaderRecord, headerValidated))
-                    .Returns(csvReader);
+                    .Returns((StreamReader reader, bool header, bool? validated) =>
+                        new CsvReader(reader, config));
 
             // when
             var actualOptOuts = new List<Car>();

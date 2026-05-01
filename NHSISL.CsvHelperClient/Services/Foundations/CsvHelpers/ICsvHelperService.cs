@@ -21,7 +21,7 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
         ValueTask MapObjectToCsvAsync<T>(
             List<T> @object,
             Stream outputStream,
-            bool hasHeaderRecord,
+            bool addHeaderRecord,
             Dictionary<string, int> fieldMappings = null,
             bool? shouldAddTrailingComma = false,
             CancellationToken cancellationToken = default);

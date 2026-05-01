@@ -47,7 +47,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             ValueTask mapObjectToCsvTask = this.csvHelperService.MapObjectToCsvAsync<Car>(
                 @object: randomCars,
                 outputStream: outputStream,
-                hasHeaderRecord: withHeaderRecord,
+                addHeaderRecord: withHeaderRecord,
                 fieldMappings,
                 shouldAddTrailingComma);
 
