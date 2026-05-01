@@ -65,7 +65,7 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
             List<T> @object,
             Stream outputStream,
             bool hasHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null,
+            Dictionary<string, int> fieldMappings = null,
             bool? shouldAddTrailingComma = false,
             CancellationToken cancellationToken = default) =>
         TryCatch(async () =>

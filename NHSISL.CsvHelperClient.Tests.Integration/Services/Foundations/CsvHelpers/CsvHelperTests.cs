@@ -24,9 +24,9 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
             this.csvClient = new CsvClient();
         }
 
-        public Task InitializeAsync() => Task.CompletedTask;
+        public ValueTask InitializeAsync() => ValueTask.CompletedTask;
 
-        public async Task DisposeAsync()
+        public async ValueTask DisposeAsync()
         {
             await this.csvClient.DisposeAsync().ConfigureAwait(false);
         }
