@@ -13,9 +13,9 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageIcon>CsvHelperClient.png</PackageIcon>
 		<PackageIconUrl />
-		<Version>1.1.0.0</Version>
-		<AssemblyVersion>1.1.0.0</AssemblyVersion>
-		<FileVersion>1.1.0.0</FileVersion>
+		<Version>2.0.0.0</Version>
+		<AssemblyVersion>2.0.0.0</AssemblyVersion>
+		<FileVersion>2.0.0.0</FileVersion>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageLicenseFile>License.txt</PackageLicenseFile>
@@ -24,7 +24,7 @@
 		<RepositoryUrl>https://github.com/NHSISL/CsvHelperClient</RepositoryUrl>
 		<RepositoryType>GitHub</RepositoryType>
 		<PackageTags>.NET CSV Helper Client</PackageTags>
-		<PackageReleaseNotes>Beta release of the CSV Helper Client upgraded to .net10.0</PackageReleaseNotes>
+		<PackageReleaseNotes>A major breaking change to allow large file handling.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
