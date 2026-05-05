@@ -1,8 +1,8 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-namespace NHSISL.CsvHelperClient.Tests.Integration.Models
+namespace NHSISL.CsvHelperClient.Tests.Acceptance.Models
 {
     internal class Car
     {

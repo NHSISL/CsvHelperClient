@@ -6,6 +6,7 @@ using FluentAssertions;
 using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using NHSISL.CsvHelperClient.Tests.Unit.Models;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -13,16 +14,11 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 {
     public partial class CsvHelperTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnMapCsvToObjectIfInputsIsInvalidAndLogItAsync(
-            string invalidText)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnMapCsvToObjectIfInputsIsInvalidAndLogItAsync()
         {
             // given
-            string randomCsvFormattedOptOutData = invalidText;
-            string inputCsvFormattedOptOutData = randomCsvFormattedOptOutData;
+            Stream nullStream = null;
             bool withHeaderRecord = true;
 
             var invalidCsvHelperArgumentsException = new InvalidCsvHelperArgumentsException(
@@ -30,7 +26,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 
             invalidCsvHelperArgumentsException.AddData(
                 key: "Data",
-                values: "Text is required");
+                values: "Stream is required");
 
             var expectedCsvHelperValidationException =
                 new CsvHelperValidationException(
@@ -38,12 +34,16 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                     innerException: invalidCsvHelperArgumentsException);
 
             // when
-            ValueTask<List<Car>> mapCsvToObjectTask = this.csvHelperService.MapCsvToObjectAsync<Car>(
-                data: inputCsvFormattedOptOutData,
-                hasHeaderRecord: withHeaderRecord);
+            async Task IterateAsync()
+            {
+                await foreach (var _ in this.csvHelperService.MapCsvToObjectAsync<Car>(
+                    data: nullStream,
+                    hasHeaderRecord: withHeaderRecord))
+                { }
+            }
 
             CsvHelperValidationException actualCsvHelperValidationException =
-                await Assert.ThrowsAsync<CsvHelperValidationException>(mapCsvToObjectTask.AsTask);
+                await Assert.ThrowsAsync<CsvHelperValidationException>(IterateAsync);
 
             // then
             actualCsvHelperValidationException.Should().BeEquivalentTo(expectedCsvHelperValidationException);

@@ -3,22 +3,27 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
 {
     internal interface ICsvHelperService
     {
-        ValueTask<List<T>> MapCsvToObjectAsync<T>(
-            string data,
+        IAsyncEnumerable<T> MapCsvToObjectAsync<T>(
+            Stream data,
             bool hasHeaderRecord,
             Dictionary<string, int> fieldMappings = null,
-            bool? headerValidated = true);
+            bool? headerValidated = true,
+            CancellationToken cancellationToken = default);
 
-        ValueTask<string> MapObjectToCsvAsync<T>(
+        ValueTask MapObjectToCsvAsync<T>(
             List<T> @object,
+            Stream outputStream,
             bool addHeaderRecord,
             Dictionary<string, int> fieldMappings = null,
-            bool? shouldAddTrailingComma = false);
+            bool? shouldAddTrailingComma = false,
+            CancellationToken cancellationToken = default);
     }
 }

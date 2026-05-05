@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using CsvHelperClient.Services.Foundations.CsvHelpers;
+using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
 using Moq;
 using NHSISL.CsvHelperClient.Brokers.CsvHelper;
 using NHSISL.CsvHelperClient.Tests.Unit.Models;

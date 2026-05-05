@@ -19,7 +19,7 @@ namespace NHSISL.CsvHelperClient.Infrastructure
             scriptGenerationService.GenerateBuildScript(
                 branchName: "main",
                 projectName: "NHSISL.CsvHelperClient",
-                dotNetVersion: "9.0.100");
+                dotNetVersion: "10.x");
         }
     }
 }

@@ -1,54 +1,37 @@
-﻿// ---------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using NHSISL.CsvHelperClient.Clients;
-using NHSISL.CsvHelperClient.Tests.Integration.Models;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using NHSISL.CsvHelperClient.Clients;
+using NHSISL.CsvHelperClient.Tests.Acceptance.Models;
 using Tynamix.ObjectFiller;
 using Xunit;
 
-namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpers
+namespace NHSISL.CsvHelperClient.Tests.Acceptance.Clients.CsvHelpers
 {
-    public partial class CsvHelperTests : IAsyncLifetime
+    public partial class CsvClientTests : IAsyncLifetime
     {
         private readonly CsvClient csvClient;
 
-        public CsvHelperTests()
+        public CsvClientTests()
         {
             this.csvClient = new CsvClient();
         }
 
-        public ValueTask InitializeAsync() => ValueTask.CompletedTask;
+        public System.Threading.Tasks.ValueTask InitializeAsync() =>
+            System.Threading.Tasks.ValueTask.CompletedTask;
 
-        public async ValueTask DisposeAsync()
+        public async System.Threading.Tasks.ValueTask DisposeAsync()
         {
             await this.csvClient.DisposeAsync().ConfigureAwait(false);
         }
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
-
-        private static List<dynamic> CreateDynamicCars(List<Car> cars)
-        {
-            return cars
-                .Select(car =>
-                {
-                    dynamic item = new ExpandoObject();
-                    item.Make = car.Make;
-                    item.Model = car.Model;
-                    item.Year = car.Year.ToString();
-                    item.Color = car.Color;
-
-                    return item;
-                })
-                .ToList<dynamic>();
-        }
 
         private static List<Car> CreateRandomCars()
         {
@@ -80,7 +63,7 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
             bool hasHeaderRow,
             bool shouldAddTrailingComma)
         {
-            StringBuilder csvBuilder = new StringBuilder();
+            var csvBuilder = new StringBuilder();
 
             if (hasHeaderRow)
             {
@@ -89,7 +72,8 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
 
             foreach (var car in cars)
             {
-                string line = $"{WrapInQuotesIfContainsComma(car.Make)}," +
+                string line =
+                    $"{WrapInQuotesIfContainsComma(car.Make)}," +
                     $"{WrapInQuotesIfContainsComma(car.Model)}," +
                     $"{WrapInQuotesIfContainsComma(car.Year.ToString())}," +
                     $"{WrapInQuotesIfContainsComma(car.Color)}";
@@ -105,24 +89,25 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
             return csvBuilder.ToString();
         }
 
-        private string GetCsvRepresentationOfDynamicObject(
-            List<dynamic> cars,
+        private string GetCsvRepresentationOfCarInReverse(
+            List<Car> cars,
             bool hasHeaderRow,
             bool shouldAddTrailingComma)
         {
-            StringBuilder csvBuilder = new StringBuilder();
+            var csvBuilder = new StringBuilder();
 
             if (hasHeaderRow)
             {
-                csvBuilder.AppendLine("Make,Model,Year,Color");
+                csvBuilder.AppendLine("Color,Year,Model,Make");
             }
 
             foreach (var car in cars)
             {
-                string line = $"{WrapInQuotesIfContainsComma(car.Make)}," +
-                    $"{WrapInQuotesIfContainsComma(car.Model)}," +
+                string line =
+                    $"{WrapInQuotesIfContainsComma(car.Color)}," +
                     $"{WrapInQuotesIfContainsComma(car.Year.ToString())}," +
-                    $"{WrapInQuotesIfContainsComma(car.Color)}";
+                    $"{WrapInQuotesIfContainsComma(car.Model)}," +
+                    $"{WrapInQuotesIfContainsComma(car.Make)}";
 
                 if (shouldAddTrailingComma)
                 {

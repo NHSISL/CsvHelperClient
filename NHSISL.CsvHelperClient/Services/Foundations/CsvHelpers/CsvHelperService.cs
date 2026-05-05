@@ -2,15 +2,16 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using NHSISL.CsvHelperClient.Brokers.CsvHelper;
 using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers;
 using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace CsvHelperClient.Services.Foundations.CsvHelpers
+namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
 {
     internal partial class CsvHelperService : ICsvHelperService
     {
@@ -19,80 +20,98 @@ namespace CsvHelperClient.Services.Foundations.CsvHelpers
         public CsvHelperService(ICsvHelperBroker csvHelperBroker) =>
             this.csvHelperBroker = csvHelperBroker;
 
-        public ValueTask<List<T>> MapCsvToObjectAsync<T>(
-            string data,
+        public IAsyncEnumerable<T> MapCsvToObjectAsync<T>(
+            Stream data,
             bool hasHeaderRecord,
             Dictionary<string, int> fieldMappings = null,
-            bool? headerValidated = true) =>
-            TryCatch(async () =>
-            {
-                ValidateMapCsvToObjectArguments(data, hasHeaderRecord);
+            bool? headerValidated = true,
+            CancellationToken cancellationToken = default) =>
+            TryCatch(
+                () => MapCsvToObjectCoreAsync<T>(
+                    data: data,
+                    hasHeaderRecord: hasHeaderRecord,
+                    fieldMappings: fieldMappings,
+                    headerValidated: headerValidated),
+                cancellationToken: cancellationToken);
 
-                using (var reader = new StringReader(data))
-                using (var csvReader = this.csvHelperBroker.CreateCsvReader(reader, hasHeaderRecord, headerValidated))
-                {
-                    if (fieldMappings != null)
-                    {
-                        csvReader.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
-                    }
-
-                    var records = csvReader.GetRecords<T>().ToList();
-
-                    return await ValueTask.FromResult(records);
-                }
-            });
-
-        public ValueTask<string> MapObjectToCsvAsync<T>(
-            List<T> @object,
+        private async IAsyncEnumerable<T> MapCsvToObjectCoreAsync<T>(
+            Stream data,
             bool hasHeaderRecord,
-            Dictionary<string, int>? fieldMappings = null,
-            bool? shouldAddTrailingComma = false) =>
+            Dictionary<string, int> fieldMappings,
+            bool? headerValidated,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            ValidateMapCsvToObjectArguments(data);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using var reader = new StreamReader(data, leaveOpen: true);
+            using var csvReader =
+                this.csvHelperBroker.CreateCsvReader(reader, hasHeaderRecord, headerValidated);
+
+            if (fieldMappings != null)
+            {
+                csvReader.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
+            }
+
+            await foreach (var record in csvReader
+                .GetRecordsAsync<T>(cancellationToken)
+                .ConfigureAwait(false))
+            {
+                yield return record;
+            }
+        }
+
+        public ValueTask MapObjectToCsvAsync<T>(
+            List<T> @object,
+            Stream outputStream,
+            bool addHeaderRecord,
+            Dictionary<string, int> fieldMappings = null,
+            bool? shouldAddTrailingComma = false,
+            CancellationToken cancellationToken = default) =>
         TryCatch(async () =>
         {
-            ValidateMapObjectToCsvArguments(@object, hasHeaderRecord);
+            ValidateMapObjectToCsvArguments(@object);
+            ValidateMapObjectToCsvOutputStream(outputStream);
+            cancellationToken.ThrowIfCancellationRequested();
             var type = typeof(T);
             bool isPlainObject = type == typeof(object);
             ValidateMapObjectToCsvArgumentCombination(isPlainObject, shouldAddTrailingComma);
 
-            using (var stringWriter = this.csvHelperBroker.CreateStringWriter())
-            using (var csvWriter = this.csvHelperBroker.CreateCsvWriter(stringWriter, hasHeaderRecord))
+            await using var streamWriter = new StreamWriter(outputStream, leaveOpen: true);
+            await using var csvWriter = this.csvHelperBroker.CreateCsvWriter(streamWriter, addHeaderRecord);
+
+            if (fieldMappings != null)
             {
-
-                if (fieldMappings != null)
-                {
-                    csvWriter.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
-                }
-
-                if (isPlainObject)
-                {
-                    await csvWriter.WriteRecordsAsync<T>(@object);
-                }
-                else
-                {
-                    if (hasHeaderRecord)
-                    {
-                        csvWriter.WriteHeader<T>();
-                        csvWriter.NextRecord();
-                    }
-
-                    foreach (var item in @object)
-                    {
-                        csvWriter.WriteRecord(item);
-
-                        if (shouldAddTrailingComma.HasValue && shouldAddTrailingComma.Value == true)
-                        {
-                            csvWriter.WriteField("");
-                        }
-
-                        csvWriter.NextRecord();
-                    }
-                }
-
-                stringWriter.Flush();
-                var csv = stringWriter.ToString();
-
-                return await ValueTask.FromResult(csv);
+                csvWriter.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
             }
+
+            if (isPlainObject)
+            {
+                await csvWriter.WriteRecordsAsync<T>(@object, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                if (addHeaderRecord)
+                {
+                    csvWriter.WriteHeader<T>();
+                    await csvWriter.NextRecordAsync().ConfigureAwait(false);
+                }
+
+                foreach (var item in @object)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    csvWriter.WriteRecord(item);
+
+                    if (shouldAddTrailingComma == true)
+                    {
+                        csvWriter.WriteField("");
+                    }
+
+                    await csvWriter.NextRecordAsync().ConfigureAwait(false);
+                }
+            }
+
+
         });
     }
 }

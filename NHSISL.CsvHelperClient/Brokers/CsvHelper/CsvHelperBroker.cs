@@ -14,24 +14,19 @@ namespace NHSISL.CsvHelperClient.Brokers.CsvHelper
 {
     internal class CsvHelperBroker : ICsvHelperBroker
     {
-        public CsvReader CreateCsvReader(StringReader reader, bool hasHeaderRecord, bool? headerValidated = true)
+        public CsvReader CreateCsvReader(StreamReader reader, bool hasHeaderRecord, bool? headerValidated = true)
         {
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = hasHeaderRecord,
                 MissingFieldFound = null,
-                HeaderValidated = headerValidated.Value == true ? ConfigurationFunctions.HeaderValidated : null
+                HeaderValidated = headerValidated == true ? ConfigurationFunctions.HeaderValidated : null
             };
 
             return new CsvReader(reader, config);
         }
 
-        public StringWriter CreateStringWriter()
-        {
-            return new StringWriter();
-        }
-
-        public CsvWriter CreateCsvWriter(StringWriter writer, bool hasHeaderRecord)
+        public CsvWriter CreateCsvWriter(StreamWriter writer, bool hasHeaderRecord)
         {
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
