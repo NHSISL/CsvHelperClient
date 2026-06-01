@@ -31,11 +31,11 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 
             // when
             ValueTask mapObjectToCsvTask = this.csvHelperService.MapObjectToCsvAsync<Car>(
-                @object: randomCars,
+                @object: ToAsyncEnumerable(randomCars),
                 outputStream: outputStream,
                 addHeaderRecord: withHeaderRecord,
-                fieldMappings,
-                shouldAddTrailingComma,
+                fieldMappings: fieldMappings,
+                shouldAddTrailingComma: shouldAddTrailingComma,
                 cancellationToken: cancellationTokenSource.Token);
 
             // then
@@ -47,7 +47,6 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
         public async Task ShouldThrowServiceExceptionOnMapObjectToCsvIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            int count = GetRandomNumber();
             List<Car> randomCars = CreateRandomCars();
             bool withHeaderRecord = true;
             Dictionary<string, int> fieldMappings = null;
@@ -72,11 +71,12 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 
             // when
             ValueTask mapObjectToCsvTask = this.csvHelperService.MapObjectToCsvAsync<Car>(
-                @object: randomCars,
+                @object: ToAsyncEnumerable(randomCars),
                 outputStream: outputStream,
                 addHeaderRecord: withHeaderRecord,
-                fieldMappings,
-                shouldAddTrailingComma);
+                fieldMappings: fieldMappings,
+                shouldAddTrailingComma: shouldAddTrailingComma,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             CsvHelperServiceException actualCsvHelperServiceException =
                 await Assert.ThrowsAsync<CsvHelperServiceException>(mapObjectToCsvTask.AsTask);

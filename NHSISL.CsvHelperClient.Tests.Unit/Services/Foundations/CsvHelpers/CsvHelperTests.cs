@@ -2,16 +2,17 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
-using Moq;
-using NHSISL.CsvHelperClient.Brokers.CsvHelper;
-using NHSISL.CsvHelperClient.Tests.Unit.Models;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
+using Moq;
+using NHSISL.CsvHelperClient.Brokers.CsvHelper;
+using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
+using NHSISL.CsvHelperClient.Tests.Unit.Models;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -71,7 +72,6 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 })
                 .ToList<dynamic>();
         }
-
 
         private static List<Car> CreateRandomCars()
         {
@@ -154,6 +154,7 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             {
                 return $"\"{value}\"";
             }
+
             return value;
         }
 
@@ -168,6 +169,16 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 dynamicCars,
                 anonymousObjectCars
             };
+        }
+
+        private static async IAsyncEnumerable<T> ToAsyncEnumerable<T>(IEnumerable<T> source)
+        {
+#pragma warning disable CS1998
+            foreach (var item in source)
+            {
+                yield return item;
+            }
+#pragma warning restore CS1998
         }
     }
 }

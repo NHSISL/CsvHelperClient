@@ -38,7 +38,8 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             {
                 await foreach (var _ in this.csvHelperService.MapCsvToObjectAsync<Car>(
                     data: nullStream,
-                    hasHeaderRecord: withHeaderRecord))
+                    hasHeaderRecord: withHeaderRecord,
+                    cancellationToken: TestContext.Current.CancellationToken))
                 { }
             }
 

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using NHSISL.CsvHelperClient.Clients;
 using NHSISL.CsvHelperClient.Tests.Acceptance.Models;
 using Tynamix.ObjectFiller;
@@ -118,6 +119,16 @@ namespace NHSISL.CsvHelperClient.Tests.Acceptance.Clients.CsvHelpers
             }
 
             return csvBuilder.ToString();
+        }
+
+        private static async IAsyncEnumerable<T> ToAsyncEnumerable<T>(IEnumerable<T> source)
+        {
+#pragma warning disable CS1998
+            foreach (var item in source)
+            {
+                yield return item;
+            }
+#pragma warning restore CS1998
         }
     }
 }

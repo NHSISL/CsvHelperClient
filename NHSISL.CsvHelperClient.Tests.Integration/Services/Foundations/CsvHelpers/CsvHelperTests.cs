@@ -134,5 +134,15 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
 
             return csvBuilder.ToString();
         }
+
+        private static async IAsyncEnumerable<T> ToAsyncEnumerable<T>(IEnumerable<T> source)
+        {
+#pragma warning disable CS1998
+            foreach (var item in source)
+            {
+                yield return item;
+            }
+#pragma warning restore CS1998
+        }
     }
 }

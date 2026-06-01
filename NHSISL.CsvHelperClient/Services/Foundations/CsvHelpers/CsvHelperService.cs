@@ -62,7 +62,7 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
         }
 
         public ValueTask MapObjectToCsvAsync<T>(
-            List<T> @object,
+            IAsyncEnumerable<T> @object,
             Stream outputStream,
             bool addHeaderRecord,
             Dictionary<string, int> fieldMappings = null,
@@ -73,8 +73,7 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
             ValidateMapObjectToCsvArguments(@object);
             ValidateMapObjectToCsvOutputStream(outputStream);
             cancellationToken.ThrowIfCancellationRequested();
-            var type = typeof(T);
-            bool isPlainObject = type == typeof(object);
+            bool isPlainObject = typeof(T) == typeof(object);
             ValidateMapObjectToCsvArgumentCombination(isPlainObject, shouldAddTrailingComma);
 
             await using var streamWriter = new StreamWriter(outputStream, leaveOpen: true);
@@ -85,33 +84,56 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
                 csvWriter.Context.RegisterClassMap(new CustomMap<T>(fieldMappings));
             }
 
-            if (isPlainObject)
+            if (addHeaderRecord && !isPlainObject)
             {
-                await csvWriter.WriteRecordsAsync<T>(@object, cancellationToken).ConfigureAwait(false);
+                csvWriter.WriteHeader<T>();
+                await csvWriter.NextRecordAsync().ConfigureAwait(false);
             }
-            else
+
+            bool expandoHeaderWritten = false;
+            int rowCount = 0;
+
+            await foreach (var item in @object
+                .WithCancellation(cancellationToken)
+                .ConfigureAwait(false))
             {
-                if (addHeaderRecord)
+                if (!expandoHeaderWritten && isPlainObject)
                 {
-                    csvWriter.WriteHeader<T>();
-                    await csvWriter.NextRecordAsync().ConfigureAwait(false);
-                }
-
-                foreach (var item in @object)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    csvWriter.WriteRecord(item);
-
-                    if (shouldAddTrailingComma == true)
+                    if (addHeaderRecord)
                     {
-                        csvWriter.WriteField("");
+                        if (item is IDictionary<string, object> expandoDict)
+                        {
+                            foreach (var key in expandoDict.Keys)
+                            {
+                                csvWriter.WriteField(key);
+                            }
+
+                            await csvWriter.NextRecordAsync().ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            csvWriter.WriteHeader(item.GetType());
+                            await csvWriter.NextRecordAsync().ConfigureAwait(false);
+                        }
                     }
 
-                    await csvWriter.NextRecordAsync().ConfigureAwait(false);
+                    expandoHeaderWritten = true;
+                }
+
+                csvWriter.WriteRecord(item);
+
+                if (shouldAddTrailingComma == true)
+                {
+                    csvWriter.WriteField("");
+                }
+
+                await csvWriter.NextRecordAsync().ConfigureAwait(false);
+
+                if (++rowCount % 1000 == 0)
+                {
+                    await streamWriter.FlushAsync(cancellationToken).ConfigureAwait(false);
                 }
             }
-
-
         });
     }
 }

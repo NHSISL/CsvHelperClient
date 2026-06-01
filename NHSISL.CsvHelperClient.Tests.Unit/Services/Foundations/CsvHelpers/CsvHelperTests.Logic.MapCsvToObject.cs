@@ -62,9 +62,10 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 
             await foreach (var car in this.csvHelperService.MapCsvToObjectAsync<Car>(
                 data: inputStream,
-                hasHeaderRecord,
-                fieldMappings,
-                headerValidated))
+                hasHeaderRecord: hasHeaderRecord,
+                fieldMappings: fieldMappings,
+                headerValidated: headerValidated,
+                cancellationToken: TestContext.Current.CancellationToken))
             {
                 actualCars.Add(car);
             }
@@ -128,7 +129,8 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             await foreach (var car in this.csvHelperService.MapCsvToObjectAsync<Car>(
                 data: inputStream,
                 hasHeaderRecord: hasHeaderRecord,
-                fieldMappings))
+                fieldMappings: fieldMappings,
+                cancellationToken: TestContext.Current.CancellationToken))
             {
                 actualOptOuts.Add(car);
             }

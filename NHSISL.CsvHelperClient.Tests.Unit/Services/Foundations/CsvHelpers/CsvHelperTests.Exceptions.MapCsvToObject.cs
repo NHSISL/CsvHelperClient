@@ -55,7 +55,6 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
         public async Task ShouldThrowServiceExceptionOnMapCsvToObjectIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            int count = GetRandomNumber();
             List<Car> randomCars = CreateRandomCars();
             bool hasHeaderRow = true;
             bool shouldAddTrailingComma = true;
@@ -88,8 +87,9 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             {
                 await foreach (var _ in this.csvHelperService.MapCsvToObjectAsync<Car>(
                     data: inputStream,
-                    hasHeaderRow,
-                    fieldMappings))
+                    hasHeaderRecord: hasHeaderRow,
+                    fieldMappings: fieldMappings,
+                    cancellationToken: TestContext.Current.CancellationToken))
                 { }
             }
 

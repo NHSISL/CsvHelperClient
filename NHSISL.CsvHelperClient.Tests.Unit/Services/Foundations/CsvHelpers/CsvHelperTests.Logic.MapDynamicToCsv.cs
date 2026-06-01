@@ -26,7 +26,6 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
         public async Task ShouldMapDynamicToCsvWithNoFieldMappingsAsync(bool withHeader)
         {
             // given
-            int count = GetRandomNumber();
             List<Car> randomCars = CreateRandomCars();
             List<dynamic> dynamicCars = CreateDynamicCars(randomCars);
 
@@ -36,8 +35,6 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 shouldAddTrailingComma: false);
 
             string expectedCsvFormattedCars = randomCsvFormattedcars.DeepClone();
-            List<Car> inputCars = randomCars;
-
             Dictionary<string, int> fieldMappings = null;
 
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -57,11 +54,12 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 
             // when
             await this.csvHelperService.MapObjectToCsvAsync<dynamic>(
-                @object: dynamicCars,
+                @object: ToAsyncEnumerable(dynamicCars),
                 outputStream: outputStream,
                 addHeaderRecord: withHeader,
-                fieldMappings,
-                shouldAddTrailingComma: false);
+                fieldMappings: fieldMappings,
+                shouldAddTrailingComma: false,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             string actualCsvFormattedCars = Encoding.UTF8.GetString(outputStream.ToArray());
 
