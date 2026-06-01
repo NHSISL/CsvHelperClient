@@ -80,19 +80,19 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
                                 new RestoreTask
                                 {
                                     Name = "Restore",
-                                    Run = "dotnet restore CsvHelperClient.sln"
+                                    Run = "dotnet restore CsvHelperClient.slnx"
                                 },
 
                                 new DotNetBuildTask
                                 {
                                     Name = "Build",
-                                    Run = "dotnet build CsvHelperClient.sln --no-restore --configuration Release"
+                                    Run = "dotnet build CsvHelperClient.slnx --no-restore --configuration Release"
                                 },
 
                                 new TestTask
                                 {
                                     Name = "Test",
-                                    Run = "dotnet test CsvHelperClient.sln --no-build --configuration Release --verbosity normal"
+                                    Run = "dotnet test CsvHelperClient.slnx --no-build --configuration Release --verbosity normal"
                                 }
                             }
                         }
