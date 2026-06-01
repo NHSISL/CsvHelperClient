@@ -2,17 +2,16 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using Microsoft.Extensions.DependencyInjection;
-using NHSISL.CsvHelperClient.Brokers.CsvHelper;
-using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
-using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
-using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using NHSISL.CsvHelperClient.Brokers.CsvHelper;
+using NHSISL.CsvHelperClient.Models.Clients.CsvHelpers.Exceptions;
+using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
+using NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers;
 using Xeptions;
 
 namespace NHSISL.CsvHelperClient.Clients
@@ -110,7 +109,7 @@ namespace NHSISL.CsvHelperClient.Clients
         }
 
         public async ValueTask MapObjectToCsvAsync<T>(
-            List<T> @object,
+            IAsyncEnumerable<T> @object,
             Stream outputStream,
             bool addHeaderRecord,
             Dictionary<string, int> fieldMappings = null,

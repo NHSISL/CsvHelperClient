@@ -31,12 +31,13 @@ namespace NHSISL.CsvHelperClient.Tests.Acceptance.Clients.CsvHelpers
             using MemoryStream outputStream = new MemoryStream();
 
             // when
-            await this.csvClient.MapObjectToCsvAsync(
-                @object: inputCars,
+            await this.csvClient.MapObjectToCsvAsync<Car>(
+                @object: ToAsyncEnumerable(inputCars),
                 outputStream: outputStream,
                 addHeaderRecord: true,
                 fieldMappings: null,
-                shouldAddTrailingComma: false);
+                shouldAddTrailingComma: false,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             string actualCsvFormattedCars = Encoding.UTF8.GetString(outputStream.ToArray());
 
@@ -60,12 +61,13 @@ namespace NHSISL.CsvHelperClient.Tests.Acceptance.Clients.CsvHelpers
             using MemoryStream outputStream = new MemoryStream();
 
             // when
-            await this.csvClient.MapObjectToCsvAsync(
-                @object: inputCars,
+            await this.csvClient.MapObjectToCsvAsync<Car>(
+                @object: ToAsyncEnumerable(inputCars),
                 outputStream: outputStream,
                 addHeaderRecord: false,
                 fieldMappings: null,
-                shouldAddTrailingComma: false);
+                shouldAddTrailingComma: false,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             string actualCsvFormattedCars = Encoding.UTF8.GetString(outputStream.ToArray());
 
@@ -97,12 +99,13 @@ namespace NHSISL.CsvHelperClient.Tests.Acceptance.Clients.CsvHelpers
             using MemoryStream outputStream = new MemoryStream();
 
             // when
-            await this.csvClient.MapObjectToCsvAsync(
-                @object: inputCars,
+            await this.csvClient.MapObjectToCsvAsync<Car>(
+                @object: ToAsyncEnumerable(inputCars),
                 outputStream: outputStream,
                 addHeaderRecord: false,
                 fieldMappings: fieldMappings,
-                shouldAddTrailingComma: false);
+                shouldAddTrailingComma: false,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             string actualCsvFormattedCars = Encoding.UTF8.GetString(outputStream.ToArray());
 
@@ -126,12 +129,13 @@ namespace NHSISL.CsvHelperClient.Tests.Acceptance.Clients.CsvHelpers
             using MemoryStream outputStream = new MemoryStream();
 
             // when
-            await this.csvClient.MapObjectToCsvAsync(
-                @object: inputCars,
+            await this.csvClient.MapObjectToCsvAsync<Car>(
+                @object: ToAsyncEnumerable(inputCars),
                 outputStream: outputStream,
                 addHeaderRecord: true,
                 fieldMappings: null,
-                shouldAddTrailingComma: true);
+                shouldAddTrailingComma: true,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             string actualCsvFormattedCars = Encoding.UTF8.GetString(outputStream.ToArray());
 
@@ -144,14 +148,14 @@ namespace NHSISL.CsvHelperClient.Tests.Acceptance.Clients.CsvHelpers
         public async Task ShouldThrowValidationExceptionOnMapObjectToCsvIfObjectIsNullAsync()
         {
             // given
-            List<Car> nullCars = null;
             using MemoryStream outputStream = new MemoryStream();
 
             // when
-            ValueTask mapTask = this.csvClient.MapObjectToCsvAsync(
-                @object: nullCars,
+            ValueTask mapTask = this.csvClient.MapObjectToCsvAsync<Car>(
+                @object: (IAsyncEnumerable<Car>)null,
                 outputStream: outputStream,
-                addHeaderRecord: true);
+                addHeaderRecord: true,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             // then
             await Assert.ThrowsAsync<
@@ -168,10 +172,11 @@ namespace NHSISL.CsvHelperClient.Tests.Acceptance.Clients.CsvHelpers
             Stream nullOutputStream = null;
 
             // when
-            ValueTask mapTask = this.csvClient.MapObjectToCsvAsync(
-                @object: randomCars,
+            ValueTask mapTask = this.csvClient.MapObjectToCsvAsync<Car>(
+                @object: ToAsyncEnumerable(randomCars),
                 outputStream: nullOutputStream,
-                addHeaderRecord: true);
+                addHeaderRecord: true,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             // then
             await Assert.ThrowsAsync<

@@ -57,8 +57,8 @@ namespace NHSISL.CsvHelperClient.Tests.Integration.Services.Foundations.CsvHelpe
                     bufferSize: 65536,
                     useAsync: true))
                 {
-                    await this.csvClient.MapObjectToCsvAsync(
-                        @object: mappedCars,
+                    await this.csvClient.MapObjectToCsvAsync<Car>(
+                        @object: ToAsyncEnumerable(mappedCars),
                         outputStream: outputStream,
                         addHeaderRecord: true);
                 }

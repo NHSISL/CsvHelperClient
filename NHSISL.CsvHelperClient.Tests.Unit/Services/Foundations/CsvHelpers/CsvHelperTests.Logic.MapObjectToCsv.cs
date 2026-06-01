@@ -30,7 +30,6 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             bool withTrailingComma)
         {
             // given
-            int count = GetRandomNumber();
             List<Car> randomCars = CreateRandomCars();
 
             string randomCsvFormattedcars = GetCsvRepresentationOfCar(
@@ -39,8 +38,6 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 shouldAddTrailingComma: withTrailingComma);
 
             string expectedCsvFormattedCars = randomCsvFormattedcars.DeepClone();
-
-            List<Car> inputCars = randomCars;
             Dictionary<string, int> fieldMappings = null;
 
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -59,12 +56,13 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                     .Returns(csvWriter);
 
             // when
-            await this.csvHelperService.MapObjectToCsvAsync(
-                @object: inputCars,
+            await this.csvHelperService.MapObjectToCsvAsync<Car>(
+                @object: ToAsyncEnumerable(randomCars),
                 outputStream: outputStream,
                 addHeaderRecord: withHeader,
-                fieldMappings,
-                shouldAddTrailingComma: withTrailingComma);
+                fieldMappings: fieldMappings,
+                shouldAddTrailingComma: withTrailingComma,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             string actualCsvFormattedCars = Encoding.UTF8.GetString(outputStream.ToArray());
 
@@ -88,7 +86,6 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             bool withTrailingComma)
         {
             // given
-            int count = GetRandomNumber();
             List<Car> randomCars = CreateRandomCars();
 
             string randomCsvFormattedcars = GetCsvRepresentationOfCarInReverse(
@@ -97,7 +94,6 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                 shouldAddTrailingComma: withTrailingComma);
 
             string expectedCsvFormattedCars = randomCsvFormattedcars.DeepClone();
-            List<Car> inputCars = randomCars;
 
             Dictionary<string, int> fieldMappings = new Dictionary<string, int>
             {
@@ -123,12 +119,13 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
                     .Returns(csvWriter);
 
             // when
-            await this.csvHelperService.MapObjectToCsvAsync(
-                @object: inputCars,
+            await this.csvHelperService.MapObjectToCsvAsync<Car>(
+                @object: ToAsyncEnumerable(randomCars),
                 outputStream: outputStream,
                 addHeaderRecord: withHeader,
-                fieldMappings,
-                shouldAddTrailingComma: withTrailingComma);
+                fieldMappings: fieldMappings,
+                shouldAddTrailingComma: withTrailingComma,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             string actualCsvFormattedCars = Encoding.UTF8.GetString(outputStream.ToArray());
 

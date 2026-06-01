@@ -2,9 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using System;
 using System.IO;
+using NHSISL.CsvHelperClient.Models.Foundations.CsvHelpers.Exceptions;
 using Xeptions;
 
 namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
@@ -14,30 +14,33 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
         private static void ValidateMapCsvToObjectArguments(Stream data)
         {
             Validate<InvalidCsvHelperArgumentsException>(
-                    message: "Invalid CSV helper arguments. Please fix the errors and try again.",
-                    (Rule: IsInvalid(data), Parameter: "Data"));
+                message: "Invalid CSV helper arguments. Please fix the errors and try again.",
+                (Rule: IsInvalid(data), Parameter: "Data"));
         }
 
         private static void ValidateMapObjectToCsvArguments<T>(T @object)
         {
             Validate<InvalidCsvHelperArgumentsException>(
-                    message: "Invalid CSV helper arguments. Please fix the errors and try again.",
-                    (Rule: IsInvalid(@object), Parameter: "Object"));
+                message: "Invalid CSV helper arguments. Please fix the errors and try again.",
+                (Rule: IsInvalid(@object), Parameter: "Object"));
         }
 
         private static void ValidateMapObjectToCsvOutputStream(Stream outputStream)
         {
             Validate<InvalidCsvHelperArgumentsException>(
-                    message: "Invalid CSV helper arguments. Please fix the errors and try again.",
-                    (Rule: IsInvalid(outputStream), Parameter: "OutputStream"));
+                message: "Invalid CSV helper arguments. Please fix the errors and try again.",
+                (Rule: IsInvalid(outputStream), Parameter: "OutputStream"));
         }
 
-        private static void ValidateMapObjectToCsvArgumentCombination(bool isPlainObject, bool? shouldAddTrailingComma)
+        private static void ValidateMapObjectToCsvArgumentCombination(
+            bool isPlainObject,
+            bool? shouldAddTrailingComma)
         {
-            if (isPlainObject == true && shouldAddTrailingComma == true)
+            if (isPlainObject && shouldAddTrailingComma == true)
             {
-                throw new InvalidCsvHelperArgumentCombinationException("Invalid CSV helper arguments. " +
-                    "Dynamic or anonymous types do not currently have support for trailing commas.");
+                throw new InvalidCsvHelperArgumentCombinationException(
+                    "Invalid CSV helper arguments. Dynamic or anonymous types do not currently " +
+                    "have support for trailing commas.");
             }
         }
 
@@ -53,7 +56,9 @@ namespace NHSISL.CsvHelperClient.Services.Foundations.CsvHelpers
             Message = "Object is required"
         };
 
-        private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(
+            string message,
+            params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
             var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);

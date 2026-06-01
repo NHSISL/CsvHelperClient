@@ -38,8 +38,8 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 
             // when
             ValueTask mapObjectToCsvTask =
-                this.csvHelperService.MapObjectToCsvAsync(
-                    @object: randomCars,
+                this.csvHelperService.MapObjectToCsvAsync<Car>(
+                    @object: ToAsyncEnumerable(randomCars),
                     outputStream: nullOutputStream,
                     addHeaderRecord: withHeaderRecord,
                     fieldMappings,
@@ -58,7 +58,6 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
         public async Task ShouldThrowValidationExceptionOnMapObjectToCsvIfInputsIsInvalidAndLogItAsync()
         {
             // given
-            List<Car> nullCars = null;
             bool withHeaderRecord = true;
             Dictionary<string, int> fieldMappings = null;
             bool shouldAddTrailingComma = true;
@@ -78,12 +77,13 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
             using MemoryStream outputStream = new MemoryStream();
 
             // when
-            ValueTask mapObjectToCsvTask = this.csvHelperService.MapObjectToCsvAsync(
-                @object: nullCars,
+            ValueTask mapObjectToCsvTask = this.csvHelperService.MapObjectToCsvAsync<Car>(
+                @object: (IAsyncEnumerable<Car>)null,
                 outputStream: outputStream,
                 addHeaderRecord: withHeaderRecord,
-                fieldMappings,
-                shouldAddTrailingComma);
+                fieldMappings: fieldMappings,
+                shouldAddTrailingComma: shouldAddTrailingComma,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             CsvHelperValidationException actualCsvHelperValidationException =
                 await Assert.ThrowsAsync<CsvHelperValidationException>(mapObjectToCsvTask.AsTask);
@@ -117,11 +117,12 @@ namespace NHSISL.CsvHelper.Tests.Unit.Services.Foundations.CsvHelpers
 
             // when
             ValueTask mapObjectToCsvTask = this.csvHelperService.MapObjectToCsvAsync(
-                @object: plainObjectCars,
+                @object: ToAsyncEnumerable(plainObjectCars),
                 outputStream: outputStream,
                 addHeaderRecord: withHeaderRecord,
-                fieldMappings,
-                shouldAddTrailingComma);
+                fieldMappings: fieldMappings,
+                shouldAddTrailingComma: shouldAddTrailingComma,
+                cancellationToken: TestContext.Current.CancellationToken);
 
             CsvHelperValidationException actualCsvHelperValidationException =
                 await Assert.ThrowsAsync<CsvHelperValidationException>(mapObjectToCsvTask.AsTask);
