@@ -113,11 +113,11 @@ jobs:
       with:
         dotnet-version: 10.x
     - name: Restore
-      run: dotnet restore CsvHelperClient.sln
+      run: dotnet restore
     - name: Build
-      run: dotnet build CsvHelperClient.sln --no-restore --configuration Release
+      run: dotnet build --no-restore
     - name: Test
-      run: dotnet test CsvHelperClient.sln --no-build --configuration Release --verbosity normal
+      run: dotnet test --no-build --verbosity normal
   add_tag:
     runs-on: ubuntu-latest
     needs:
