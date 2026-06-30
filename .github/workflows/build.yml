@@ -29,9 +29,10 @@ env:
 jobs:
   label:
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
     - name: Apply Label
-      uses: actions/github-script@v6
+      uses: actions/github-script@v8
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: >-
@@ -100,6 +101,7 @@ jobs:
           }
     permissions:
       contents: read
+      issues: write
       pull-requests: write
   Build:
     runs-on: ubuntu-latest
@@ -107,9 +109,9 @@ jobs:
     - name: Enable long paths for Git
       run: git config --global core.longpaths true
     - name: Check Out
-      uses: actions/checkout@v3
+      uses: actions/checkout@v5
     - name: Setup Dot Net Version
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 10.x
     - name: Restore
@@ -134,7 +136,7 @@ jobs:
       contains(github.event.pull_request.labels.*.name, 'RELEASES')
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v5
       with:
         token: ${{ secrets.PAT_FOR_TAGGING }}
     - name: Configure Git
@@ -206,9 +208,9 @@ jobs:
     if: needs.add_tag.result == 'success'
     steps:
     - name: Check out
-      uses: actions/checkout@v3
+      uses: actions/checkout@v5
     - name: Setup .Net
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 10.x
     - name: Restore
