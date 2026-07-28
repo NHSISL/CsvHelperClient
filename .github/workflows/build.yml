@@ -9,6 +9,8 @@ on:
     - synchronize
     - reopened
     - closed
+permissions:
+  contents: read
 env:
   IS_RELEASE_CANDIDATE: >-
     ${{
