@@ -5,7 +5,7 @@
 using ADotNet.Clients;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks;
-using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks.SetupDotNetTaskV3s;
+using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks.SetupDotNetTaskV5s;
 
 namespace NHSISL.CsvHelperClient.Infrastructure.Services
 {
@@ -31,8 +31,7 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
 
                     PullRequest = new PullRequestEvent
                     {
-                        Types = new string[] { "opened", "synchronize", "reopened", "closed" },
-                        Branches = new string[] { branchName }
+                        Types = new string[] { "opened", "synchronize", "reopened", "closed" }
                     }
                 },
 
@@ -45,13 +44,10 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
                 Jobs = new Dictionary<string, Job>
                 {
                     {
-                        "label",
-                        new LabelJobV2(runsOn: BuildMachines.UbuntuLatest)
-                    },
-                    {
-                        "Build",
+                        "build",
                         new Job
                         {
+                            Name = "Build",
                             RunsOn = BuildMachines.UbuntuLatest,
 
                             Steps = new List<GithubTask>
@@ -62,16 +58,16 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
                                     Run = "git config --global core.longpaths true"
                                 },
 
-                                new CheckoutTaskV3
+                                new CheckoutTaskV5
                                 {
                                     Name = "Check Out"
                                 },
 
-                                new SetupDotNetTaskV3
+                                new SetupDotNetTaskV5
                                 {
                                     Name = "Setup Dot Net Version",
 
-                                    With = new TargetDotNetVersionV3
+                                    With = new TargetDotNetVersionV5
                                     {
                                         DotNetVersion = dotNetVersion
                                     }
@@ -96,7 +92,7 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
                     },
                     {
                         "add_tag",
-                        new TagJob(
+                        new TagJobV2(
                             runsOn: BuildMachines.UbuntuLatest,
                             dependsOn: "build",
                             projectRelativePath: $"{projectName}/{projectName}.csproj",
@@ -105,7 +101,7 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
                     },
                     {
                         "publish",
-                        new PublishJobV2(
+                        new PublishJobV4(
                             runsOn: BuildMachines.UbuntuLatest,
                             dependsOn: "add_tag",
                             dotNetVersion: dotNetVersion,
@@ -115,6 +111,60 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
             };
 
             string buildScriptPath = "../../../../.github/workflows/build.yml";
+            string directoryPath = Path.GetDirectoryName(buildScriptPath);
+
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            adotNetClient.SerializeAndWriteToFile(
+                githubPipeline,
+                path: buildScriptPath);
+        }
+
+        public void GeneratePrLintScript(string branchName)
+        {
+            var githubPipeline = new GithubPipeline
+            {
+                Name = "PR Linter",
+
+                OnEvents = new Events
+                {
+                    PullRequest = new PullRequestEvent
+                    {
+                        Types = new string[] { "opened", "edited", "synchronize", "reopened", "closed" },
+                        Branches = new string[] { branchName }
+                    }
+                },
+
+                Jobs = new Dictionary<string, Job>
+                {
+                    {
+                        "label",
+                        new LabelJobV3(runsOn: BuildMachines.UbuntuLatest)
+                        {
+                            Name = "Label"
+                        }
+                    },
+                    {
+                        "requireIssueOrTask",
+                        new RequireIssueOrTaskJobV2(excludedAuthors: "dependabot[bot]")
+                        {
+                            Name = "Require Issue Or Task Association",
+                        }
+                    },
+                    {
+                        "setAuthorAsPrAssignee",
+                        new SetAuthorAsPrAssigneeJobV2(runsOn: BuildMachines.UbuntuLatest)
+                        {
+                            Name = "Set Author As PR Assignee",
+                        }
+                    },
+                }
+            };
+
+            string buildScriptPath = "../../../../.github/workflows/prLinter.yml";
             string directoryPath = Path.GetDirectoryName(buildScriptPath);
 
             if (!Directory.Exists(directoryPath))
