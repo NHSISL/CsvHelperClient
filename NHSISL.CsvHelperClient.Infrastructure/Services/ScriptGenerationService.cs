@@ -85,7 +85,10 @@ namespace NHSISL.CsvHelperClient.Infrastructure.Services
 
                                 new TestTask
                                 {
-                                    Name = "Test"
+                                    Name = "Test",
+
+                                    Run = "dotnet test --solution CsvHelperClient.slnx "
+                                        + "--no-build --verbosity normal --ignore-exit-code 8"
                                 }
                             }
                         }
